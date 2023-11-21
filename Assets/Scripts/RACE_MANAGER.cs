@@ -401,10 +401,13 @@ public class RACE_MANAGER : MonoBehaviour
     }
 
 
+    //I have disabled the purpose of these functions for now until we know its purpose better, currently it just creates errors if we don't fill in sets.
+    //-Borari
     public void DisableSet1()
     {
         for(int i = 0; i < set1.Length; i++)
         {
+            return;
             if(set1[i].name.IndexOf("Cow") >= 0)
             {
                 set1[i].transform.GetChild(1).gameObject.SetActive(false);
@@ -419,6 +422,7 @@ public class RACE_MANAGER : MonoBehaviour
     {
         for (int i = 0; i < set1.Length; i++)
         {
+            return;
             if (set1[i].name.IndexOf("Cow") >= 0)
             {
                 set1[i].transform.GetChild(1).gameObject.SetActive(true);
@@ -431,6 +435,7 @@ public class RACE_MANAGER : MonoBehaviour
 
         for (int i = 0; i < set2.Length; i++)
         {
+            return;
             if (set2[i].name.IndexOf("Cow") >= 0)
             {
                 set2[i].transform.GetChild(1).gameObject.SetActive(false);
@@ -444,6 +449,7 @@ public class RACE_MANAGER : MonoBehaviour
 
     public void DisableSet3()
     {
+        return;
         for (int i = 0; i < set2.Length; i++)
         {
             if (set2[i].name.IndexOf("Cow") >= 0)
@@ -470,6 +476,7 @@ public class RACE_MANAGER : MonoBehaviour
     }
     public void enableAllSets()
     {
+        return;
         for (int i = 0; i < set1.Length; i++)
         {
             if (set1[i].name.IndexOf("Cow") >= 0)
