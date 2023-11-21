@@ -614,36 +614,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Itembox Line
       objectReference: {fileID: 0}
-    - target: {fileID: 3526606787160649301, guid: af8a61178037e7748be9bb8513fb123d,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3526606787594585212, guid: af8a61178037e7748be9bb8513fb123d,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3526606787680488395, guid: af8a61178037e7748be9bb8513fb123d,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3526606788455888769, guid: af8a61178037e7748be9bb8513fb123d,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3526606788547974684, guid: af8a61178037e7748be9bb8513fb123d,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4898360126912736584, guid: af8a61178037e7748be9bb8513fb123d,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6632860121831414134, guid: af8a61178037e7748be9bb8513fb123d,
         type: 3}
       propertyPath: m_RootOrder
