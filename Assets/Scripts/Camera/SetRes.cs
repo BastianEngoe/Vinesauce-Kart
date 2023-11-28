@@ -1,18 +1,23 @@
 ﻿using UnityEngine;
-using System.Collections;
+
 [ExecuteInEditMode]
-public class SetRes : MonoBehaviour {
+public class SetRes : MonoBehaviour
+{
 	public static int pixelScale = 1;
 	public static RenderTexture SceneBuffer;
-	// Use this for initialization
-	void Start () {
-		//Debug.Log (Screen.height);
+
+	void Start() 
+	{
 		pixelScale = 2;
-		if(Screen.height > 1000)
+		if (Screen.height > 1000)
+		{ 
 			pixelScale = 3;
-		if(Screen.height > 1400)
+		}
+		if (Screen.height > 1400)
+		{ 
 			pixelScale = 4;
-		//Debug.Log (pixelScale);
+		}
+
 		SceneBuffer = new RenderTexture(Screen.width/pixelScale,Screen.height/pixelScale,24);
 		SceneBuffer.filterMode = FilterMode.Point;
 		SceneBuffer.depth = 24;
@@ -21,16 +26,14 @@ public class SetRes : MonoBehaviour {
 		SceneBuffer.name = "SceneBuffer";
 		GetComponent<Camera>().targetTexture = SceneBuffer;
 		GameObject.FindGameObjectWithTag ("UICamera").GetComponent<Camera>().targetTexture = SceneBuffer;
-
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	void Update()
+	{
 		if(!GetComponent<Camera>().targetTexture)
 		{	
 			GetComponent<Camera>().targetTexture = SceneBuffer;
 			GameObject.FindGameObjectWithTag ("UICamera").GetComponent<Camera>().targetTexture = SceneBuffer;
-
 		}
 	}
 }

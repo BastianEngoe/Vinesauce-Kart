@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
+
 [ExecuteInEditMode]
-public class LightingControl : MonoBehaviour {
+public class LightingControl : MonoBehaviour
+{
 	public bool dynamicPerfAdjust = false;
 	public bool Shadows = false;
 	public bool AdvancedAmbient = true;
@@ -19,86 +20,70 @@ public class LightingControl : MonoBehaviour {
 	public Material AmbientMat;
 	public Material EdgeLitMat;
 	public Material SkyboxMat;
-	//#pragma multi_compile SHADOW_ON SHADOW_OFF
-	//#pragma multi_compile ADVAMBIENT_ON ADVAMBIENT_OFF  
-	void UpdateLighting() {
-		if(Application.isMobilePlatform){
+
+	void UpdateLighting()
+	{
+		if (Application.isMobilePlatform)
+		{
 			mainSceneLight.GetComponent<Light>().shadowBias = .125f;
-			//EnableShadows = false;
-			if(Screen.height > 800)
-				Screen.SetResolution (Screen.width/2,Screen.height/2,true);
+			if (Screen.height > 800)
+			{ 
+				Screen.SetResolution(Screen.width / 2, Screen.height / 2, true);
+			}
 			QualitySettings.shadowCascades = 1;
 			QualitySettings.shadowDistance = 100;
 		}
+
 		LitMat.mainTexture = LitProbe;
 		AmbientMat.mainTexture = AmbientProbe;
 		EdgeLitMat.mainTexture = EdgeLitProbe;
-		SkyboxMat.SetTexture ("_Tex",SkyBoxMap);
+		SkyboxMat.SetTexture ("_Tex", SkyBoxMap);
 
-		if(EnableShadows)
+		foreach (Material material in modifiedMaterials)
 		{
-			foreach(Material mat in modifiedMaterials){
-				if(mat)
-					mat.EnableKeyword("SHADOW_ON");
-			}
-			mainSceneLight.SetActive (true);
+			if (material is null)
+				continue;
+
+			SetKeywordValue(material, "SHADOW_ON", EnableShadows);
+			mainSceneLight.SetActive(EnableShadows);
+
+			SetKeywordValue(material, "ADVAMBIENT_ON", EnableAdvancedAmbient);
+
+			SetKeywordValue(material, "ADVFOG_ON", AdvancedFog);
+			SetKeywordValue(material, "ADVFOG_OFF", !AdvancedFog);
 		}
-		else
-		{
-			foreach(Material mat in modifiedMaterials){
-				if(mat)
-					mat.DisableKeyword("SHADOW_ON");
-			}
-			mainSceneLight.SetActive (false);
-		}
-		if(EnableAdvancedAmbient)
-		{
-			foreach(Material mat in modifiedMaterials){
-				if(mat)
-					mat.EnableKeyword("ADVAMBIENT_ON");
-			}
-		}
-		else
-		{
-			foreach(Material mat in modifiedMaterials){
-				if(mat)
-					mat.DisableKeyword("ADVAMBIENT_ON");
-			}
-		}
-		if(AdvancedFog)
-		{
-			foreach(Material mat in modifiedMaterials){
-				if(mat){
-					mat.EnableKeyword("ADVFOG_ON");
-					mat.DisableKeyword("ADVFOG_OFF");
-				}
-			}
-			
-		}
-		else
-		{
-			foreach(Material mat in modifiedMaterials){
-				if(mat){
-					mat.DisableKeyword("ADVFOG_ON");
-					mat.EnableKeyword("ADVFOG_OFF");
-				}
-			}
-		}
-	}
-	void Start(){
+
+		#region Local Function.
+
+		void SetKeywordValue(Material material, string keywordName, bool value)
+        {
+			if (value)
+            {
+				material.EnableKeyword(keywordName);
+            }
+			else
+            {
+				material.DisableKeyword(keywordName);
+            }
+        }
+
+        #endregion
+    }
+
+    void Start()
+	{
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 		Application.targetFrameRate = 30;
 		UpdateLighting();
 	}
 
-	void OnRenderObject() {
-		#if UNITY_EDITOR_WIN
+#if UNITY_EDITOR_WIN
+	void OnRenderObject()
+	{
 		EnableShadows = Shadows;
 		EnableAdvancedAmbient = AdvancedAmbient;
 		EnableAdvancedFog = AdvancedFog;
 		UpdateLighting();
-		#endif
-		//Debug.Log("The Advanced Fog is "+ defaultLit.IsKeywordEnabled("ADVFOG_ON"));
 	}
-
+#endif
 }
