@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Banana : MonoBehaviour
 {
@@ -42,10 +40,10 @@ public class Banana : MonoBehaviour
     public void Move()
     {
         rb.AddRelativeForce(Vector3.down * 10000 * Time.deltaTime, ForceMode.Acceleration);
-
     }
 
-    public void Banana_thrown(float extraForward){
+    public void Banana_thrown(float extraForward)
+    {
         //throwForceUp = Mathf.SmoothStep(throwForceUp, -50000, 8 * Time.deltaTime);
         rb.AddForce(transform.up * throwForceUp * Time.deltaTime, ForceMode.Impulse);
         rb.AddForce(-transform.forward * (throwForceForward + extraForward) * Time.deltaTime, ForceMode.Impulse);
