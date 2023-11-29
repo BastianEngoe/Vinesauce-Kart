@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Linq;
 using UnityEngine;
 
 public class PlayerSounds : MonoBehaviour
@@ -30,33 +29,31 @@ public class PlayerSounds : MonoBehaviour
     [HideInInspector]
     public bool SceneEntryFinished = false;
 
-    // Start is called before the first frame update
     void Start()
     {
         playerscript = GetComponent<Player>();
         item_script = GetComponent<ItemManager>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         kart_sounds();
         if (sound_count == Mario_Boost_Sounds.Length)
+        {
             sound_count = 0;
+        }
 
-        if(SceneEntryFinished)
+        if (SceneEntryFinished)
+        {
             kartIdle.volume = Mathf.Lerp(kartIdle.volume, 0.8f, 1f * Time.deltaTime);
-
+        }
     }
 
     void kart_sounds()
     {
-        if (playerscript.currentspeed < 10 && playerscript.currentspeed >=-10)
+        if (playerscript.currentspeed < 10 && playerscript.currentspeed >= -10 && !kartIdle.isPlaying)
         {
-            if (!kartIdle.isPlaying)
-            {
-                kartIdle.Play();
-            }
+            kartIdle.Play();
         }
         if (playerscript.currentspeed < -10)
         {
@@ -115,7 +112,6 @@ public class PlayerSounds : MonoBehaviour
 
             }
 
-
             //pitch
             if (!playerscript.Boost)
             {
@@ -125,11 +121,10 @@ public class PlayerSounds : MonoBehaviour
             {
                 kartSound.pitch = Mathf.Lerp(kartSound.pitch, 1.3f, 5f * Time.deltaTime);
             }
-            else if( playerscript.Boost && playerscript.GLIDER_FLY)
+            else if (playerscript.Boost && playerscript.GLIDER_FLY)
             {
                 kartSound.pitch = Mathf.Lerp(kartSound.pitch, 1.5f, 5f * Time.deltaTime);
             }
-            
         }
         if (playerscript.currentspeed < 10 || item_script.isBullet)
         {
@@ -138,27 +133,24 @@ public class PlayerSounds : MonoBehaviour
         if (playerscript.GLIDER_FLY && !RACE_MANAGER.RACE_COMPLETED)
         {
             kartSound.volume = 0.3f;
-        } 
-        else if(!playerscript.GLIDER_FLY && !RACE_MANAGER.RACE_COMPLETED)
+        }
+        else if (!playerscript.GLIDER_FLY && !RACE_MANAGER.RACE_COMPLETED)
         {
             kartSound.volume = 0.45f;
         }
 
         if (RACE_MANAGER.RACE_COMPLETED && kartSound.volume > 0)
         {
-
             kartSound.volume -= 0.01f;
         }
     }
-    
-    public bool Check_if_playing()  //this method returns a bool, and checks if any mario sounds are already playing, so if-statements can decide whether to or not to play a new sound
+
+    public bool CheckIfSoundPlaying()  //this method returns a bool, and checks if any mario sounds are already playing, so if-statements can decide whether to or not to play a new sound
     {
-        for(int i = 0; i < Mario_Boost_Sounds.Length; i++)
-        {
-            if (Mario_Boost_Sounds[i].isPlaying || effectSounds[18].isPlaying || GetComponent<ItemManager>().isBullet)
-                return false;
-        }
-        return true;
+        if (effectSounds[18].isPlaying || GetComponent<ItemManager>().isBullet)
+            return false;
+
+        return Mario_Boost_Sounds.Any(sound => sound.isPlaying);
 
     }
 
@@ -173,7 +165,7 @@ public class PlayerSounds : MonoBehaviour
                 hurtSoundCounter = 0;
             }
         }
-       
+
     }
 
 }

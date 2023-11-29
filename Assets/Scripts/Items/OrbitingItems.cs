@@ -20,11 +20,11 @@ public class OrbitingItems : MonoBehaviour
             {
                 if (gameObject.tag == "Shell")
                 {
-                    itemManage.hitByShell();
+                    itemManage.HitByShell();
                 }
                 else
                 {
-                    itemManage.hitByBanana();
+                    itemManage.HitByBanana();
                 }
                 itemOwner.GetComponent<ItemManager>().tripleItemCount--;
                 int item_index = itemOwner.GetComponent<ItemManager>().item_index;
@@ -36,7 +36,7 @@ public class OrbitingItems : MonoBehaviour
                     itemOwner.GetComponent<ItemManager>().item_gameobjects[item_index].transform.GetChild(0).gameObject.SetActive(true);
                     itemOwner.GetComponent<ItemManager>().item_gameobjects[item_index].transform.GetChild(1).gameObject.SetActive(true);
                     itemOwner.GetComponent<ItemManager>().item_gameobjects[item_index].transform.GetChild(2).gameObject.SetActive(true);
-                    itemOwner.GetComponent<ItemManager>().used_Item_Done();
+                    itemOwner.GetComponent<ItemManager>().OnUsedItemDone();
                 }
             }
         }

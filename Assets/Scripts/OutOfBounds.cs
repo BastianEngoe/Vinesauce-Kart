@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class OutOfBounds : MonoBehaviour
@@ -9,13 +8,8 @@ public class OutOfBounds : MonoBehaviour
     [HideInInspector]
     public bool outOfBounds = false;
 
-    [HideInInspector] 
+    [HideInInspector]
     public bool PlayerBeingMoved = false; //for camera
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -28,14 +22,13 @@ public class OutOfBounds : MonoBehaviour
 
     private IEnumerator OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.tag == "Water")
+        if (other.gameObject.tag == "Water")
         {
-            if(gameObject.tag == "Player")
+            if (gameObject.tag == "Player")
             {
                 GetComponent<Player>().currentspeed = 0;
                 FellInWater = true;
                 PlayerBeingMoved = true;
-
 
                 yield return new WaitForSeconds(0.5f);
 
@@ -44,18 +37,15 @@ public class OutOfBounds : MonoBehaviour
 
                 Transform currPoint = GetComponent<LapCounter>().checkpoints.GetChild(GetComponent<LapCounter>().currentCheckpointVal);
 
-                
-
                 transform.position = currPoint.position;
                 transform.rotation = currPoint.rotation;
-
 
                 //get item path checkpoint next
                 float dist = 99999;
                 int checkPointVal = 0;
-                for(int i = 0; i < GetComponent<ItemManager>().path.childCount; i++)
+                for (int i = 0; i < GetComponent<ItemManager>().path.childCount; i++)
                 {
-                    if(Vector3.Distance(GetComponent<ItemManager>().path.GetChild(i).position, transform.position) < dist)
+                    if (Vector3.Distance(GetComponent<ItemManager>().path.GetChild(i).position, transform.position) < dist)
                     {
                         dist = Vector3.Distance(GetComponent<ItemManager>().path.GetChild(i).position, transform.position);
                         checkPointVal = i;
@@ -63,14 +53,13 @@ public class OutOfBounds : MonoBehaviour
                 }
                 GetComponent<ItemManager>().currentWayPoint = checkPointVal + 1;
 
-
                 PlayerBeingMoved = false;
 
                 yield return new WaitForSeconds(0.5f);
                 GetComponent<Rigidbody>().isKinematic = false;
             }
 
-            if(gameObject.tag == "Opponent")
+            if (gameObject.tag == "Opponent")
             {
                 GetComponent<ComputerDriver>().current_speed = 0;
                 FellInWater = true;
@@ -95,17 +84,15 @@ public class OutOfBounds : MonoBehaviour
                 }
                 GetComponent<OpponentItemManager>().currentWayPoint = checkPointVal + 1;
 
-
                 transform.position = currPoint.position;
                 transform.rotation = currPoint.rotation;
                 PlayerBeingMoved = false;
 
                 yield return new WaitForSeconds(0.5f);
                 GetComponent<Rigidbody>().isKinematic = false;
-
             }
         }
-        else if(other.gameObject.tag == "OutOfBounds")
+        else if (other.gameObject.tag == "OutOfBounds")
         {
             if (gameObject.tag == "Player")
             {
@@ -160,7 +147,7 @@ public class OutOfBounds : MonoBehaviour
 
                 Transform currPoint = GetComponent<ComputerDriver>().path.GetChild(GetComponent<ComputerDriver>().current_node);
                 //set a few lap checkpoints to true ahead
-                for(int i = 1; i <= 3; i++)
+                for (int i = 1; i <= 3; i++)
                 {
                     GetComponent<LapCounter>().checkpointsVisited[GetComponent<LapCounter>().currentCheckpointVal + i] = true;
                 }
@@ -190,7 +177,7 @@ public class OutOfBounds : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Dirt")
+        if (collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Dirt")
         {
             FellInWater = false;
             outOfBounds = false;

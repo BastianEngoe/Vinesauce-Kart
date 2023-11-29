@@ -96,7 +96,7 @@ public class RedShell : MonoBehaviour
             if (Vector3.Distance(player.position, transform.position) < 100 && who_threw_shell != player.name)
             {
                 closeToPlayer = true;
-                StartCoroutine(rm.warningRedShell(transform));
+                StartCoroutine(rm.WarningRedShell(transform));
             }
         }
     }
@@ -269,7 +269,7 @@ public class RedShell : MonoBehaviour
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().CurrentTrailingItem.SetActive(false);
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().CurrentTrailingItem = null;
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().current_Item = "";
-                other.transform.parent.parent.parent.GetComponent<ItemManager>().used_Item_Done();
+                other.transform.parent.parent.parent.GetComponent<ItemManager>().OnUsedItemDone();
                 destroyShell();
             }
             else
@@ -282,7 +282,7 @@ public class RedShell : MonoBehaviour
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().CurrentTrailingItem.SetActive(false);
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().CurrentTrailingItem = null;
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().current_Item = "";
-                other.transform.parent.parent.parent.GetComponent<ItemManager>().used_Item_Done();
+                other.transform.parent.parent.parent.GetComponent<ItemManager>().OnUsedItemDone();
                 destroyShell();
             }
         }
@@ -353,11 +353,11 @@ public class RedShell : MonoBehaviour
             {
                 if (!collision.gameObject.GetComponent<OpponentItemManager>().StarPowerUp)
                 {
-                    collision.gameObject.GetComponent<OpponentItemManager>().hitByShell(); //the opponent has the function that does all this work
+                    collision.gameObject.GetComponent<OpponentItemManager>().HitByShell(); //the opponent has the function that does all this work
                     if (who_threw_shell == "Mario")
                     {
                         GameObject.Find("Mario").GetComponent<Player>().Driver.SetTrigger("HitItem");
-                        if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().Check_if_playing())
+                        if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().CheckIfSoundPlaying())
                             GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().effectSounds[18].Play();
                     }
                     destroyShell();
@@ -377,7 +377,7 @@ public class RedShell : MonoBehaviour
                 {
                     if (!collision.gameObject.GetComponent<ItemManager>().StarPowerUp)
                     {
-                        StartCoroutine(collision.gameObject.GetComponent<Player>().hitByShell()); //the player has the function that does all this work
+                        StartCoroutine(collision.gameObject.GetComponent<Player>().HitByShell()); //the player has the function that does all this work
 
                         try
                         {

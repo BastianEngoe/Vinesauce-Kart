@@ -41,12 +41,10 @@ public class DontGoThroughThings : MonoBehaviour
             //check for obstructions we might have missed
             if (Physics.Raycast(previousPosition, movementThisStep, out hitInfo, movementMagnitude, layerMask.value))
             {
-                if (!hitInfo.collider)
+                if (hitInfo.collider?.isTrigger != true)
                     return;
-
-
-                if (!hitInfo.collider.isTrigger)
-                    myRigidbody.position = hitInfo.point - (movementThisStep / movementMagnitude) * partialExtent;
+                    
+                myRigidbody.position = hitInfo.point - (movementThisStep / movementMagnitude) * partialExtent;
             }
         }
 

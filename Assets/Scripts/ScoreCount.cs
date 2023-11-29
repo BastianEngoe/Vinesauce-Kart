@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 using UnityEngine;
 
 public class ScoreCount : MonoBehaviour
@@ -11,16 +9,10 @@ public class ScoreCount : MonoBehaviour
 
     public Color maxCoinColor;
     public Color regCoinColor;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void Update()
     {
-        if(COINCOUNT < 10)
+        if (COINCOUNT < 10)
         {
             Coin_Text.text = "0" + COINCOUNT;
             Coin_Text2.text = "0" + COINCOUNT;

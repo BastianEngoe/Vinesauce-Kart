@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ComputerDriverSounds : MonoBehaviour
 {
@@ -11,14 +9,12 @@ public class ComputerDriverSounds : MonoBehaviour
 
     public AudioSource[] BulletSounds;
 
-    // Start is called before the first frame update
     void Start()
     {
         aiScript = GetComponent<ComputerDriver>();
         itemManage = GetComponent<OpponentItemManager>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         kart_sounds();
@@ -39,7 +35,7 @@ public class ComputerDriverSounds : MonoBehaviour
         }
 
         //bullet stuff later
-        if (aiScript.current_speed >= 5 && !aiScript.GLIDER_FLY && !itemManage.isBullet)
+        if (aiScript.current_speed >= 5 && !aiScript.GliderFly && !itemManage.isBullet)
         {
             if (!kartSound.isPlaying)
             {
@@ -96,11 +92,11 @@ public class ComputerDriverSounds : MonoBehaviour
             {
                 kartSound.pitch = Mathf.Lerp(kartSound.pitch, 1f, 5f * Time.deltaTime);
             }
-            else if (aiScript.boost && !aiScript.GLIDER_FLY)
+            else if (aiScript.boost && !aiScript.GliderFly)
             {
                 kartSound.pitch = Mathf.Lerp(kartSound.pitch, 1.3f, 5f * Time.deltaTime);
             }
-            else if (aiScript.boost && aiScript.GLIDER_FLY)
+            else if (aiScript.boost && aiScript.GliderFly)
             {
                 kartSound.pitch = Mathf.Lerp(kartSound.pitch, 1.5f, 5f * Time.deltaTime);
             }
@@ -110,11 +106,11 @@ public class ComputerDriverSounds : MonoBehaviour
         {
             kartSound.Stop();
         }
-        if (aiScript.GLIDER_FLY && !RACE_MANAGER.RACE_COMPLETED)
+        if (aiScript.GliderFly && !RACE_MANAGER.RACE_COMPLETED)
         {
             kartSound.volume = 0.5f;
         }
-        else if (!aiScript.GLIDER_FLY && !RACE_MANAGER.RACE_COMPLETED)
+        else if (!aiScript.GliderFly && !RACE_MANAGER.RACE_COMPLETED)
         {
             kartSound.volume = 1f;
         }

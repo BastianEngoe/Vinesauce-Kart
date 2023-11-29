@@ -93,7 +93,7 @@ public class BlueShell : MonoBehaviour
 
         if (Vector3.Distance(transform.position, player.position) < 100 && !initiateWarning)
         {
-            StartCoroutine(rm.warningBlueShell(transform));
+            StartCoroutine(rm.WarningBlueShell(transform));
             initiateWarning = true;
         }
 
@@ -304,7 +304,7 @@ public class BlueShell : MonoBehaviour
             //HITTING OPPONENTS
             if (collision.gameObject.tag == "Opponent" && who_threw_shell != collision.gameObject.name)
             {
-                collision.gameObject.GetComponent<OpponentItemManager>().hitByShell(); //the opponent has the function that does all this work
+                collision.gameObject.GetComponent<OpponentItemManager>().HitByShell(); //the opponent has the function that does all this work
 
             }
             if (collision.gameObject.tag == "Player" && Vector3.Distance(transform.position, collision.transform.position) < 5)
@@ -313,7 +313,7 @@ public class BlueShell : MonoBehaviour
                 {
                     if (!collision.gameObject.GetComponent<ItemManager>().StarPowerUp)
                     {
-                        StartCoroutine(collision.gameObject.GetComponent<Player>().hitByShell()); //the player has the function that does all this work
+                        StartCoroutine(collision.gameObject.GetComponent<Player>().HitByShell()); //the player has the function that does all this work
                         GameObject.Find("Main Camera").GetComponent<Animator>().SetTrigger("ShellHit");
                     }
                 }

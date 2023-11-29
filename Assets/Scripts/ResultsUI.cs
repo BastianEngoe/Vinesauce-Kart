@@ -14,30 +14,18 @@ public class ResultsUI : MonoBehaviour
 
     private int playerResult;
 
-    // Start is called before the first frame update
-    void Start()
+    public void CreateResults(List<LapCounter> players)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-  
-    }
-
-    public void createResults(List<LapCounter> players)
-    {
-        for(int i = 0; i < players.Count; i++)
+        for (int i = 0; i < players.Count; i++)
         {
-            if(players[i].gameObject.name == "Mario")
+            if (players[i].gameObject.name == "Mario")
             {
                 transform.GetChild(i).GetChild(2).gameObject.GetComponent<Text>().text = "Mario";
                 transform.GetChild(i).GetChild(1).gameObject.GetComponent<Image>().sprite = playerIcons[0];
 
                 playerResult = i;
 
-                
+
             }
             else if (players[i].gameObject.name == "Luigi")
             {
@@ -54,7 +42,7 @@ public class ResultsUI : MonoBehaviour
                 transform.GetChild(i).GetChild(2).gameObject.GetComponent<Text>().text = "Shy Guy";
                 transform.GetChild(i).GetChild(1).gameObject.GetComponent<Image>().sprite = playerIcons[3];
             }
-            else if(players[i].gameObject.name == "Waluigi")
+            else if (players[i].gameObject.name == "Waluigi")
             {
                 transform.GetChild(i).GetChild(2).gameObject.GetComponent<Text>().text = "Waluigi";
                 transform.GetChild(i).GetChild(1).gameObject.GetComponent<Image>().sprite = playerIcons[4];
@@ -74,14 +62,12 @@ public class ResultsUI : MonoBehaviour
                 transform.GetChild(i).GetChild(2).gameObject.GetComponent<Text>().text = "Peach";
                 transform.GetChild(i).GetChild(1).gameObject.GetComponent<Image>().sprite = playerIcons[7];
             }
-
-
         }
         GetComponent<Animator>().SetBool("RaceEnd", true);
-        StartCoroutine(yellowPlayerResult());
+        StartCoroutine(YellowPlayerResult());
     }
 
-    public IEnumerator yellowPlayerResult()
+    public IEnumerator YellowPlayerResult()
     {
         yield return new WaitForSeconds(1);
 
