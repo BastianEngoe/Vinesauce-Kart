@@ -1,10 +1,8 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TireTest : MonoBehaviour
 {
-    private Vector3 localPos;
     public LayerMask mask;
 
     public Transform wheelLookAt;
@@ -14,19 +12,14 @@ public class TireTest : MonoBehaviour
     float driftCooldown = 0;
 
     private Vector3 pos;
-    // Start is called before the first frame update
+
     void Start()
     {
-        localPos = transform.GetChild(0).localPosition;
-
-        StartCoroutine(getPos());
+        StartCoroutine(GetPos());
     }
 
-    // Update is called once per frame
     void Update()
     {
-
-
         if (Input.GetKeyDown(KeyCode.V))
         {
             driftCooldown = 1;
@@ -37,7 +30,6 @@ public class TireTest : MonoBehaviour
         {
             transform.GetChild(0).localPosition = Vector3.LerpUnclamped(transform.GetChild(0).localPosition, pos, 10 * Time.deltaTime);
         }
-
 
         if (gameObject.name.IndexOf("Axel") < 0) //is a tire
         {
@@ -94,20 +86,14 @@ public class TireTest : MonoBehaviour
 
                 }
             }
-            
         }
         else //is an axel
         {
             transform.LookAt(wheelLookAt.transform.GetChild(0));
         }
-        
-        
-       
-
-
     }
 
-    IEnumerator getPos()
+    IEnumerator GetPos()
     {
         yield return new WaitForSeconds(1);
         if (gameObject.name.IndexOf("Axel") < 0)

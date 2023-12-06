@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
@@ -17,8 +16,6 @@ public class UtilityFunctions : MonoBehaviour
 
     private RACE_MANAGER rm;
 
-
-
     // Start is called before the first frame update
     void Start()
     {
@@ -26,24 +23,24 @@ public class UtilityFunctions : MonoBehaviour
         playerscript = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
         //cow stuff
-        if(gameObject.name.IndexOf("Cow") >= 0)
+        if (gameObject.name.IndexOf("Cow") >= 0)
         {
-            StartCoroutine(cowAnimDelay());
+            StartCoroutine(CowAnimDelay());
         }
 
-        StartCoroutine(headBoneParent());
-        StartCoroutine(headBoneParentOpponent());
+        StartCoroutine(HeadBoneParent());
+        StartCoroutine(HeadBoneParentOpponent());
 
-        disableCam();
+        DisableCam();
 
-        if(gameObject.name.IndexOf("PalmTree") >= 0)
+        if (gameObject.name.IndexOf("PalmTree") >= 0)
         {
-            StartCoroutine(palmTreeAnim());
+            StartCoroutine(PalmTreeAnim());
         }
 
         rm = GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>();
 
-        StartCoroutine(trolleyAudioSource());
+        StartCoroutine(TrolleyAudioSource());
     }
 
     // Update is called once per frame
@@ -58,13 +55,13 @@ public class UtilityFunctions : MonoBehaviour
             drifting = false;
         }
 
-        camPos();
-        hairAnim();
-        trail();
+        CamPos();
+        HairAnim();
+        Trail();
 
-        playerAntiGravityConstantForce();
+        PlayerAntiGravityConstantForce();
 
-        if(gameObject.tag == "GliderPanel" || gameObject.tag == "ColliderInAir")
+        if (gameObject.tag == "GliderPanel" || gameObject.tag == "ColliderInAir")
         {
             if (RACE_MANAGER.RACE_COMPLETED)
             {
@@ -75,61 +72,62 @@ public class UtilityFunctions : MonoBehaviour
 
     private void LateUpdate()
     {
-        moustacheAnim();
+        MoustacheAnim();
 
     }
 
-    public void cam_shake()
+    public void CamShake()
     {
-        if(transform.parent.tag == "Player")
+        if (transform.parent.tag == "Player")
         {
 
-            if(!GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().FrontFPCam.activeSelf)
+            if (!GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().FrontFPCam.activeSelf)
                 Camera.main.GetComponent<Animator>().SetTrigger("Shake");
         }
     }
-    public void playCoinSound()
+    public void PlayCoinSound()
     {
         GetComponent<AudioSource>().Play();
     }
-    public void playHopSound()
+
+    public void PlayHopSound()
     {
         if (drifting)
         {
             //removed sound from here
         }
 
-        hopStart();
+        HopStart();
     }
-    public void gliderOpenflapSound()
+
+    public void GliderOpenflapSound()
     {
         playersounds.effectSounds[12].Play();
     }
 
-    public void is_drifting()
+    public void IsDrifting()
     {
-       GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().drifting = true;
+        GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().drifting = true;
         hopEnd = true;
     }
-    public void hopStart()
+
+    public void HopStart()
     {
         hopEnd = false;
     }
 
-    public void camPos()
+    public void CamPos()
     {
-        if(this.gameObject.name == "Main Camera Back")
+        if (gameObject.name == "Main Camera Back")
         {
             transform.localPosition = new Vector3(0, -0.66f, 2.5f);
         }
     }
 
-    public void moustacheAnim()
+    public void MoustacheAnim()
     {
-        if(gameObject.name == "Moustache")
+        if (gameObject.name == "Moustache")
         {
-            
-
             if (playerscript.REALCURRENTSPEED > 40)
             {
                 gameObject.GetComponent<Animator>().SetBool("moustaceMove", true);
@@ -138,16 +136,14 @@ public class UtilityFunctions : MonoBehaviour
             {
                 gameObject.GetComponent<Animator>().SetBool("moustaceMove", false);
             }
-
-            
-
-        }    
+        }
     }
-    public void hairAnim()
+
+    public void HairAnim()
     {
-        if(gameObject.name == "Hair")
+        if (gameObject.name == "Hair")
         {
-            if(playerscript.REALCURRENTSPEED > 40)
+            if (playerscript.REALCURRENTSPEED > 40)
             {
                 gameObject.GetComponent<Animator>().SetBool("HairMove", true);
             }
@@ -158,33 +154,33 @@ public class UtilityFunctions : MonoBehaviour
         }
     }
 
-
-
-    public void countDownNoise()
+    public void CountDownNoise()
     {
         GetComponent<AudioSource>().Play();
     }
-    public void goSound()
+
+    public void GoSound()
     {
         transform.GetChild(3).GetComponent<AudioSource>().Play();
     }
-    public void raceStarted()
+
+    public void RaceStarted()
     {
         RACE_MANAGER.RACE_STARTED = true;
-        if(rm.trolleySystem != null)
+        if (rm.trolleySystem != null)
         {
             rm.trolleySystem.InstantiateFirstTram();
         }
     }
 
-    public void fadeOut()
+    public void FadeOut()
     {
         GameObject.Find("FadeInOut").GetComponent<Animator>().SetTrigger("FadeOut");
     }
 
-    void trail()
+    void Trail()
     {
-        if(gameObject.name == "Trail")
+        if (gameObject.name == "Trail")
         {
             //ground normal rotation
             Ray ground = new Ray(transform.position, -transform.up);
@@ -197,29 +193,30 @@ public class UtilityFunctions : MonoBehaviour
         }
     }
 
-
-
-    public void startCountDown()
+    public void StartCountDown()
     {
         StartCoroutine(GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().CountDownTImerPlay());
     }
-    public void disableThisCam()
+
+    public void DisableThisCam()
     {
         gameObject.GetComponent<Camera>().enabled = false;
-        transform.GetChild(0).gameObject.SetActive(false);    
+        transform.GetChild(0).gameObject.SetActive(false);
     }
-    public void disableCourseNameUI()
+
+    public void DisableCourseNameUI()
     {
-        StartCoroutine(disableCourseNameUIFunc());
+        StartCoroutine(DisableCourseNameUIFunc());
     }
-    IEnumerator disableCourseNameUIFunc()
+
+    IEnumerator DisableCourseNameUIFunc()
     {
         GameObject NameUI = GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().CourseNameUI;
 
         //make text transparent
         for (int i = 0; i < 20; i++)
         {
-            for(int j = 0; j < NameUI.transform.GetChild(0).childCount; j++)
+            for (int j = 0; j < NameUI.transform.GetChild(0).childCount; j++)
             {
                 Transform text = NameUI.transform.GetChild(0);
                 text.GetChild(j).GetComponent<Text>().color -= new Color(0, 0, 0, 0.2f);
@@ -238,26 +235,24 @@ public class UtilityFunctions : MonoBehaviour
             }
             NameUI.GetComponent<Image>().color -= new Color(0, 0, 0, 0.02f);
             yield return new WaitForSeconds(0.001f);
-
         }
-
-
     }
 
-    public void happy()
+    public void Happy()
     {
-        StartCoroutine(happyFacePlayer());
+        StartCoroutine(HappyFacePlayer());
     }
-    public IEnumerator happyFacePlayer()
+
+    public IEnumerator HappyFacePlayer()
     {
-        for(int i = 0; i < 40; i++)
+        for (int i = 0; i < 40; i++)
         {
             playerscript.MarioFace.material = playerscript.faces[3];
             yield return new WaitForSeconds(0.016f);
         }
     }
 
-    void updatePositionUI()
+    void UpdatePositionUI()
     {
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -272,16 +267,16 @@ public class UtilityFunctions : MonoBehaviour
         }
     }
 
-    void explode()
+    void Explode()
     {
         transform.parent.GetComponent<BlueShell>().isactive = false;
         GameObject clone = Instantiate(transform.parent.GetComponent<BlueShell>().blueExplosion, transform.position + new Vector3(0, 1, 0), transform.parent.GetComponent<BlueShell>().blueExplosion.transform.rotation);
-        if(transform.parent.GetComponent<BlueShell>().who_threw_shell != transform.parent.GetComponent<BlueShell>().chase_opponent.name)
+        if (transform.parent.GetComponent<BlueShell>().who_threw_shell != transform.parent.GetComponent<BlueShell>().chase_opponent.name)
         {
-            if(transform.parent.GetComponent<BlueShell>().who_threw_shell == "Mario")
+            if (transform.parent.GetComponent<BlueShell>().who_threw_shell == "Mario")
             {
                 GameObject.Find("Mario").GetComponent<Player>().Driver.SetTrigger("HitItem");
-                if(GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().Check_if_playing())
+                if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().CheckIfSoundPlaying())
                     GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().effectSounds[18].Play();
             }
         }
@@ -298,13 +293,13 @@ public class UtilityFunctions : MonoBehaviour
         Instantiate(transform.parent.GetComponent<BlueShell>().smoke, clone.transform.GetChild(0).position, transform.parent.GetComponent<BlueShell>().smoke.transform.rotation);
         Destroy(transform.parent.gameObject);
     }
-    public void playResultSound()
+
+    public void PlayResultSound()
     {
         GetComponent<AudioSource>().Play();
     }
 
-
-    IEnumerator cowAnimDelay()
+    IEnumerator CowAnimDelay()
     {
         GetComponent<Animator>().enabled = false;
 
@@ -316,20 +311,21 @@ public class UtilityFunctions : MonoBehaviour
 
     }
 
-    IEnumerator headBoneParent()
+    IEnumerator HeadBoneParent()
     {
         yield return new WaitForSeconds(1);
-        if(gameObject.name == "Bone_017")
+        if (gameObject.name == "Bone_017")
         {
             Transform newParent = transform.parent.GetChild(1);
 
             transform.parent = newParent;
         }
     }
-    IEnumerator headBoneParentOpponent()
+
+    IEnumerator HeadBoneParentOpponent()
     {
         yield return new WaitForSeconds(1);
-        if(gameObject.name == "Head")
+        if (gameObject.name == "Head")
         {
             Transform newParent = transform.parent.GetChild(3);
 
@@ -337,56 +333,58 @@ public class UtilityFunctions : MonoBehaviour
         }
     }
 
-
-
-    public void disableSet1()
+    public void DisableSet1()
     {
         GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().DisableSet1();
     }
-    public void disableSet2()
+
+    public void DisableSet2()
     {
         GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().DisableSet2();
     }
-    public void disableSet3()
+
+    public void DisableSet3()
     {
         GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().DisableSet3();
     }
-    public void enableSets()
+
+    public void EnableSets()
     {
-        GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().enableAllSets();
+        GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().EnableAllSets();
     }
 
     //to make the lens flare system detect that this camera is a camera to include in the post processing effects, but immediately disable after game starts when not using.
-    public void disableCam()
+    public void DisableCam()
     {
-        if(this.gameObject.name == "Main Camera" || gameObject.name == "Main Camera Back" || gameObject.name == "FPCAM")
-            StartCoroutine(disableMainCam());
+        if (this.gameObject.name == "Main Camera" || gameObject.name == "Main Camera Back" || gameObject.name == "FPCAM")
+            StartCoroutine(DisableMainCam());
     }
-    IEnumerator disableMainCam()
+
+    IEnumerator DisableMainCam()
     {
         yield return new WaitForSeconds(0.2f);
         gameObject.SetActive(false);
     }
 
-    public IEnumerator palmTreeAnim()
+    public IEnumerator PalmTreeAnim()
     {
         float time = UnityEngine.Random.Range(0, 1.5f);
         yield return new WaitForSeconds(time);
         GetComponent<Animator>().enabled = true;
     }
 
-    public IEnumerator trolleyAudioSource()
+    public IEnumerator TrolleyAudioSource()
     {
-        if(this.gameObject.name == "TrolleyAudioSourceEntry")
+        if (gameObject.name == "TrolleyAudioSourceEntry")
         {
             yield return new WaitForSeconds(3);
             GetComponent<AudioSource>().enabled = false;
         }
     }
 
-    void playerAntiGravityConstantForce()
+    void PlayerAntiGravityConstantForce()
     {
-        if(gameObject.tag == "Player")
+        if (gameObject.tag == "Player")
         {
             if (GetComponent<Player>().antiGravity)
             {

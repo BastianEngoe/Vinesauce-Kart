@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 //THIS script is for shells moving around the track shot by opponents or player
-
 public class GreenShell : MonoBehaviour
 {
     private SphereCollider sphereCollider;
@@ -31,10 +28,6 @@ public class GreenShell : MonoBehaviour
 
     public bool needsExtraDownForceAntigravity = false;
 
-
-
-
-    // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -43,13 +36,10 @@ public class GreenShell : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         Move();
-        groundNormalRotation();
-
-
+        GroundNormalRotation();
     }
 
     private void Move()
@@ -57,13 +47,13 @@ public class GreenShell : MonoBehaviour
         myVelocity = myVelocity.normalized;
         myVelocity *= velocityMagOriginal * Time.deltaTime;
 
-        if(!AntiGravity)
+        if (!AntiGravity)
+        {
             myVelocity.y = rb.velocity.y;
-
+        }
 
         rb.velocity = myVelocity;
 
-        
         Vector3 vel = transform.InverseTransformDirection(rb.velocity);
         if (!AntiGravity)
         {
@@ -81,12 +71,12 @@ public class GreenShell : MonoBehaviour
         {
             rb.AddRelativeForce(Vector3.down * 100000 * Time.deltaTime, ForceMode.Acceleration);
         }
-        
+
 
         lifetime += Time.deltaTime;
 
     }
-    void groundNormalRotation()
+    void GroundNormalRotation()
     {
         //ground normal rotation
         Ray ground = new Ray(transform.position, -transform.up);
@@ -94,8 +84,6 @@ public class GreenShell : MonoBehaviour
         if (Physics.Raycast(ground, out hit, 10, mask))
         {
             transform.rotation = Quaternion.LerpUnclamped(transform.rotation, Quaternion.FromToRotation(transform.up * 2, hit.normal) * transform.rotation, 13f * Time.deltaTime);
-
-            
         }
 
     }
@@ -125,31 +113,28 @@ public class GreenShell : MonoBehaviour
         }
     }
 
-
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.tag != "Ground" && collision.gameObject.tag != "Dirt" && collision.gameObject.tag != "JumpPanel" && collision.gameObject.tag != "ShellPlatforms")
+        if (collision.gameObject.tag != "Ground" && collision.gameObject.tag != "Dirt" && collision.gameObject.tag != "JumpPanel" && collision.gameObject.tag != "ShellPlatforms")
         {
             if (collision.gameObject.tag == "Shell")
             {
-                destroyShell();
+                DestroyShell();
             }
             if (collision.gameObject.tag == "Banana" || collision.gameObject.tag == "Cow")
             {
-                destroyShell();
+                DestroyShell();
                 if (collision.gameObject.tag != "Cow")
                 {
                     Destroy(collision.gameObject);
                 }
             }
 
-
             if (collision.gameObject.name.Equals(who_threw_shell)) //wait 0.5 second before detecting collisions with person 
             {
                 if (lifetime > 0.5f)
                 {
-                    destroyShell();
-
+                    DestroyShell();
                 }
                 else
                 {
@@ -158,47 +143,41 @@ public class GreenShell : MonoBehaviour
             }
             else
             {
-                if(collision.gameObject.tag != "GliderPanel")
+                if (collision.gameObject.tag != "GliderPanel")
                 {
                     Vector3 oldvel = myVelocity;
 
                     rb.velocity = Vector3.zero;
                     myVelocity = Vector3.Reflect(myVelocity, collision.contacts[0].normal);
 
-                    
-
                     if (lifetime > 20)
                     {
-                        destroyShell();
+                        DestroyShell();
                     }
                 }
-                
             }
-            
+
             //HITTING OPPONENTS
-            if(collision.gameObject.tag == "Opponent" && collision.gameObject.tag != who_threw_shell) 
+            if (collision.gameObject.tag == "Opponent" && collision.gameObject.tag != who_threw_shell)
             {
                 if (!collision.gameObject.GetComponent<OpponentItemManager>().StarPowerUp)
                 {
-                    if(lifetime > 0.1f)
+                    if (lifetime > 0.1f)
                     {
-                        collision.gameObject.GetComponent<OpponentItemManager>().hitByShell(); //the opponent has the function that does all this work
+                        collision.gameObject.GetComponent<OpponentItemManager>().HitByShell(); //the opponent has the function that does all this work
                         if (who_threw_shell == "Mario")
                         {
                             GameObject.Find("Mario").GetComponent<Player>().Driver.SetTrigger("HitItem");
-                            if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().Check_if_playing())
+                            if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().CheckIfSoundPlaying())
                                 GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().effectSounds[18].Play();
                         }
-                        destroyShell();
+                        DestroyShell();
                     }
-                    
-
                 }
                 else
                 {
-                    destroyShell();
+                    DestroyShell();
                 }
-                
             }
             if (collision.gameObject.tag == "Player")
             {
@@ -206,19 +185,17 @@ public class GreenShell : MonoBehaviour
                 {
                     if (!collision.gameObject.GetComponent<ItemManager>().StarPowerUp)
                     {
-                        StartCoroutine(collision.gameObject.GetComponent<Player>().hitByShell()); //the player has the function that does all this work
+                        StartCoroutine(collision.gameObject.GetComponent<Player>().HitByShell()); //the player has the function that does all this work
 
                         if (rm.FrontCam.activeSelf)
+                        {
                             GameObject.Find("Main Camera").GetComponent<Animator>().SetTrigger("ShellHit");
+                        }
                     }
-                    destroyShell();
+                    DestroyShell();
                 }
             }
-
-
         }
-                
-        
     }
 
     private void OnCollisionStay(Collision collision)
@@ -227,7 +204,7 @@ public class GreenShell : MonoBehaviour
         {
             grounded = true;
         }
-        if(collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Dirt")
+        if (collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Dirt")
         {
             antiGravityGrounded = true;
         }
@@ -244,7 +221,7 @@ public class GreenShell : MonoBehaviour
         }
     }
 
-    public void destroyShell()
+    public void DestroyShell()
     {
         int x = transform.GetChild(0).childCount; //particle systems
         for (int i = 0; i < x; i++)
@@ -255,9 +232,6 @@ public class GreenShell : MonoBehaviour
         sphereCollider.enabled = false;
         rb.isKinematic = true;
 
-        
-
         Destroy(gameObject, 3);
-
     }
 }

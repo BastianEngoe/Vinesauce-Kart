@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -78,10 +77,10 @@ public class Bobomb : MonoBehaviour
         }
         GetComponent<Animator>().SetBool("Moving", true);
         float shortDistance = 999999;
-        for(int i = 0; i < players.Length; i++)
+        for (int i = 0; i < players.Length; i++)
         {
             float distance = Vector3.Distance(players[i].position, transform.position);
-            if(shortDistance > distance)
+            if (shortDistance > distance)
             {
                 shortDistance = distance;
                 closest_Player = players[i];
@@ -103,11 +102,9 @@ public class Bobomb : MonoBehaviour
         //float y = Mathf.SmoothDamp(transform.eulerAngles.y, transform.eulerAngles.y + dir, ref none, 2.5f * Time.deltaTime);
         y = Mathf.SmoothDamp(y, dir, ref none, 2.5f * Time.deltaTime);
 
-
         transform.Rotate(0, y / 2, 0, Space.Self);
 
         rb.velocity = transform.TransformDirection(0, rb.velocity.y, moveSpeed * Time.deltaTime); //goes in direction thingy is facing in as its positive z value
-
     }
 
     public void bomb_thrown(float extraForward)
@@ -115,7 +112,6 @@ public class Bobomb : MonoBehaviour
         rb.AddForce(transform.up * throwForceUp * Time.deltaTime, ForceMode.Impulse);
         rb.AddForce(-transform.forward * (throwForceForward + extraForward) * Time.deltaTime, ForceMode.Impulse);
     }
-
 
     void groundNormalRotation()
     {
@@ -130,29 +126,28 @@ public class Bobomb : MonoBehaviour
 
     private IEnumerator OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Dirt")
+        if (collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Dirt")
         {
             groundNormalRotation();
 
-            if(bounce_count < 4)
+            if (bounce_count < 4)
             {
-                rb.AddRelativeForce(transform.InverseTransformDirection(transform.up) * bounceForce/(bounce_count * 1.5f) * Time.deltaTime, ForceMode.Impulse);
+                rb.AddRelativeForce(transform.InverseTransformDirection(transform.up) * bounceForce / (bounce_count * 1.5f) * Time.deltaTime, ForceMode.Impulse);
                 yield return new WaitForSeconds(0.01f);
                 bounce_count++;
             }
-            if(bounce_count == 4)
+            if (bounce_count == 4)
             {
                 StartCoroutine(Explode());
                 landed = true;
             }
         }
 
-        if(collision.gameObject.tag == "Player" || collision.gameObject.tag == "Opponent")
+        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Opponent")
         {
             StartCoroutine(explodeImmediately());
         }
     }
-
 
     IEnumerator Explode()
     {
@@ -160,7 +155,7 @@ public class Bobomb : MonoBehaviour
         if (!exploded)
         {
             GameObject clone = Instantiate(explosion, explosionPos.position, explosion.transform.rotation);
-            
+
             Instantiate(smoke, smokePos.position, smokePos.rotation);
             for (int i = 0; i < renderers.Length; i++)
             {
@@ -171,7 +166,7 @@ public class Bobomb : MonoBehaviour
                 spark[i].SetActive(false);
             }
             exploded = true;
-            if(Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, transform.position) < 250)
+            if (Vector3.Distance(GameObject.FindGameObjectWithTag("Player").transform.position, transform.position) < 250)
             {
                 clone.GetComponent<AudioSource>().Play();
                 Camera.main.GetComponent<Animator>().SetTrigger("Shake2");
@@ -180,9 +175,6 @@ public class Bobomb : MonoBehaviour
         }
         yield return new WaitForSeconds(2);
         gameObject.SetActive(false);
-        
-
-
     }
 
     IEnumerator explodeImmediately()

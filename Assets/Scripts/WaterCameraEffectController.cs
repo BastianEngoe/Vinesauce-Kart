@@ -1,14 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
 
 public class WaterCameraEffectController : MonoBehaviour
 {
-
     public UnityEngine.Rendering.VolumeProfile volumeProfile;
-
 
     public Image waterScreen;
     public float waterScreenAlpha;
@@ -37,29 +33,25 @@ public class WaterCameraEffectController : MonoBehaviour
     public ParticleSystem propellerBubbles;
     public ParticleSystem regularBubbles;
 
-
-    // Start is called before the first frame update
     void Start()
     {
         playerHat.SetFloat("_Smoothness", hatSmoothness);
         origSmoothness = playerHat.GetFloat("_Smoothness");
-        
     }
 
-    // Update is called once per frame
     void Update()
     {
-        playerHat.SetFloat("_Smoothness", Mathf.Lerp(playerHat.GetFloat("_Smoothness"), origSmoothness, Time.deltaTime/2));
+        playerHat.SetFloat("_Smoothness", Mathf.Lerp(playerHat.GetFloat("_Smoothness"), origSmoothness, Time.deltaTime / 2));
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if(other.gameObject.name == "DEPTHWATER")
+        if (other.gameObject.name == "DEPTHWATER")
         {
             UnityEngine.Rendering.Universal.ColorAdjustments colorAdjustments;
             if (!volumeProfile.TryGet(out colorAdjustments)) throw new System.NullReferenceException(nameof(colorAdjustments));
             {
-                colorAdjustments.active = true;         
+                colorAdjustments.active = true;
                 Color c = waterScreen.color;
                 c.a = waterScreenAlpha;
                 waterScreen.color = c;
@@ -73,6 +65,7 @@ public class WaterCameraEffectController : MonoBehaviour
             }
         }
     }
+
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.name == "DEPTHWATER")
@@ -96,33 +89,32 @@ public class WaterCameraEffectController : MonoBehaviour
                     audioSource.volume = regularAudioVolume;
                 }
             }
-            revertMarioUnderwaterVoice();
+            RevertMarioUnderwaterVoice();
             propellerBubbles.Stop();
             regularBubbles.Stop();
-
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.name == "DEPTHWATER")
+        if (other.gameObject.name == "DEPTHWATER")
         {
             float time = audioSource.time;
             audioSource.clip = underWaterAudio;
             audioSource.time = time;
-            if(underWaterAudioVolume != 0)
+            if (underWaterAudioVolume != 0)
             {
                 audioSource.volume = underWaterAudioVolume;
             }
-            setMarioUnderwaterVoice();
+            SetMarioUnderwaterVoice();
             bubbleBurst.Play();
 
         }
     }
 
-    void setMarioUnderwaterVoice()
+    void SetMarioUnderwaterVoice()
     {
-        for(int i = 0; i < allMarioVoiceAudioSources.childCount; i++)
+        for (int i = 0; i < allMarioVoiceAudioSources.childCount; i++)
         {
             allMarioVoiceAudioSources.GetChild(i).GetComponent<AudioSource>().outputAudioMixerGroup = underWaterVoice;
         }
@@ -133,7 +125,7 @@ public class WaterCameraEffectController : MonoBehaviour
         }
     }
 
-    void revertMarioUnderwaterVoice()
+    void RevertMarioUnderwaterVoice()
     {
         for (int i = 0; i < allMarioVoiceAudioSources.childCount; i++)
         {
@@ -144,9 +136,7 @@ public class WaterCameraEffectController : MonoBehaviour
         {
             effectSounds.GetChild(i).GetComponent<AudioSource>().outputAudioMixerGroup = null;
         }
-
     }
-
 
     public void SceneEntryUnderWaterView()
     {
@@ -158,7 +148,6 @@ public class WaterCameraEffectController : MonoBehaviour
             c.a = waterScreenAlpha;
             waterScreen.color = c;
         }
-
     }
 
     public void SceneEntryCamExitWater()

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class BlueShell : MonoBehaviour
 {
@@ -52,32 +50,23 @@ public class BlueShell : MonoBehaviour
 
     private float speed = 7500;
 
-
-    // Start is called before the first frame update
     void Start()
     {
-
         path = pathOption1;
-
 
         player = GameObject.FindGameObjectWithTag("Player").transform;
         rm = GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>();
         sphereCollider = GetComponent<SphereCollider>();
         rb = GetComponent<Rigidbody>();
-        
+
 
         if (who_threw_shell.Equals("Player"))
         {
             current_node = GameObject.Find(who_threw_shell).GetComponent<ItemManager>().currentWayPoint;
         }
         speed = 7500;
-
-
     }
 
-
-
-    // Update is called once per frame
     void FixedUpdate()
     {
         lifetime += Time.deltaTime;
@@ -85,35 +74,30 @@ public class BlueShell : MonoBehaviour
 
         if (!LockedOnTarget)
             RotateTowards();
-        else if(!attackingTarget)
+        else if (!attackingTarget)
         {
             ChaseTarget();
         }
 
-        if(!attackingTarget)
+        if (!attackingTarget)
             move();
 
         if (!grounded && !GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().GLIDER_FLY && !AntiGravity)
         {
             rb.AddForce(Vector3.down * 15000 * Time.deltaTime, ForceMode.Acceleration);
         }
-        else if(AntiGravity && !grounded)
+        else if (AntiGravity && !grounded)
         {
             rb.AddRelativeForce(Vector3.down * 15000 * Time.deltaTime, ForceMode.Acceleration);
         }
 
         if (Vector3.Distance(transform.position, player.position) < 100 && !initiateWarning)
         {
-            StartCoroutine(rm.warningBlueShell(transform));
+            StartCoroutine(rm.WarningBlueShell(transform));
             initiateWarning = true;
         }
 
     }
-
-
-
-
-
 
     void RotateTowards()
     {
@@ -133,14 +117,9 @@ public class BlueShell : MonoBehaviour
             float none = 0;
             float y = Mathf.SmoothDamp(transform.eulerAngles.y, transform.eulerAngles.y + dir, ref none, smoothTime * Time.deltaTime);
 
-
-
-
             if (Physics.Raycast(ground, out hit, 10, mask))
             {
                 Quaternion rot = Quaternion.LerpUnclamped(transform.rotation, Quaternion.FromToRotation(transform.up * 2, hit.normal) * transform.rotation, 6 * Time.deltaTime);
-
-
 
                 transform.eulerAngles = new Vector3(rot.eulerAngles.x, y, rot.eulerAngles.z);
             }
@@ -150,7 +129,7 @@ public class BlueShell : MonoBehaviour
 
             }
         }
-        else if(!LockedOnTarget)
+        else if (!LockedOnTarget)
         {
             Ray ground = new Ray(transform.position, -transform.up);
             RaycastHit hit;
@@ -228,23 +207,23 @@ public class BlueShell : MonoBehaviour
 
     void move()
     {
-       Vector3 vel = transform.forward * speed * Time.deltaTime;
+        Vector3 vel = transform.forward * speed * Time.deltaTime;
 
-        if(!AntiGravity)
-            vel.y = rb.velocity.y/1.5f;
+        if (!AntiGravity)
+            vel.y = rb.velocity.y / 1.5f;
         rb.velocity = vel;
     }
 
     void DetectTarget()
     {
-        for(int i = 0; i < allplayers.Length; i++)
+        for (int i = 0; i < allplayers.Length; i++)
         {
-            if(allplayers[i].GetComponent<LapCounter>().Position == 1)
+            if (allplayers[i].GetComponent<LapCounter>().Position == 1)
             {
                 chase_opponent = allplayers[i].transform;
             }
         }
-        if(Vector3.Distance(transform.position, chase_opponent.position) < 40)
+        if (Vector3.Distance(transform.position, chase_opponent.position) < 40)
         {
             smoothTime = 1f;
             LockedOnTarget = true;
@@ -269,15 +248,13 @@ public class BlueShell : MonoBehaviour
                     transform.position = Vector3.Lerp(transform.position, upDist, 5 * Time.deltaTime);
                 }
             }
-            
-            transform.GetChild(0).GetComponent<Animator>().SetBool("LockedOn", true);
 
+            transform.GetChild(0).GetComponent<Animator>().SetBool("LockedOn", true);
 
             //fix magnitude thing
             float distanceToTarget = 0;
 
             distanceToTarget = Vector3.Distance(transform.position, chase_opponent.GetComponent<PlayerBlueShellRaycast>().upRay.GetPoint(8));
-
 
             if (distanceToTarget <= 2.5f)
             {
@@ -310,9 +287,7 @@ public class BlueShell : MonoBehaviour
             {
                 current_node++;
             }
-
         }
-
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -329,7 +304,7 @@ public class BlueShell : MonoBehaviour
             //HITTING OPPONENTS
             if (collision.gameObject.tag == "Opponent" && who_threw_shell != collision.gameObject.name)
             {
-                collision.gameObject.GetComponent<OpponentItemManager>().hitByShell(); //the opponent has the function that does all this work
+                collision.gameObject.GetComponent<OpponentItemManager>().HitByShell(); //the opponent has the function that does all this work
 
             }
             if (collision.gameObject.tag == "Player" && Vector3.Distance(transform.position, collision.transform.position) < 5)
@@ -338,17 +313,12 @@ public class BlueShell : MonoBehaviour
                 {
                     if (!collision.gameObject.GetComponent<ItemManager>().StarPowerUp)
                     {
-                        StartCoroutine(collision.gameObject.GetComponent<Player>().hitByShell()); //the player has the function that does all this work
+                        StartCoroutine(collision.gameObject.GetComponent<Player>().HitByShell()); //the player has the function that does all this work
                         GameObject.Find("Main Camera").GetComponent<Animator>().SetTrigger("ShellHit");
                     }
                 }
             }
-
-
         }
-
-
-
     }
 
     private void OnCollisionStay(Collision collision)

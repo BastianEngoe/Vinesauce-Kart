@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class OpponentItemManager : MonoBehaviour
@@ -7,8 +6,6 @@ public class OpponentItemManager : MonoBehaviour
     private ComputerDriver ai_script;
     private LapCounter lap_counter;
     private ComputerDriverSounds comp_sounds;
-
-
 
     [Header("ITEMS")]
     public GameObject[] ItemsPossible;
@@ -72,9 +69,6 @@ public class OpponentItemManager : MonoBehaviour
 
     private RACE_MANAGER rm;
 
-
-
-    // Start is called before the first frame update
     void Start()
     {
         ai_script = GetComponent<ComputerDriver>();
@@ -85,11 +79,10 @@ public class OpponentItemManager : MonoBehaviour
         rm = GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         invincibleTime -= Time.deltaTime;
-        if(invincibleTime > 0)
+        if (invincibleTime > 0)
         {
             invincible = true;
         }
@@ -104,19 +97,19 @@ public class OpponentItemManager : MonoBehaviour
         //item stuff
         if (already_has_item && !StarPowerUp)
         {
-            usingItem();
+            UsingItem();
         }
 
-        if(StarPowerUp && !closeToPlayer && Vector3.Distance(transform.position, player.position) < 100)
+        if (StarPowerUp && !closeToPlayer && Vector3.Distance(transform.position, player.position) < 100)
         {
             closeToPlayer = true;
-            StartCoroutine(rm.warningStar(transform));
+            StartCoroutine(rm.WarningStar(transform));
         }
 
-        if(isBullet && !closeToPlayer && Vector3.Distance(transform.position, player.position) < 100)
+        if (isBullet && !closeToPlayer && Vector3.Distance(transform.position, player.position) < 100)
         {
             closeToPlayer = true;
-            StartCoroutine(rm.warningBullet(transform));
+            StartCoroutine(rm.WarningBullet(transform));
         }
     }
 
@@ -126,13 +119,14 @@ public class OpponentItemManager : MonoBehaviour
         {
             if (collision.gameObject.GetComponent<Banana>().lifetime > 0.2f && !StarPowerUp)
             {
-                hitByBanana();
+                HitByBanana();
                 if (collision.gameObject.GetComponent<Banana>().whoThrewBanana == "Mario")
                 {
                     GameObject.Find("Mario").GetComponent<Player>().Driver.SetTrigger("HitItem");
-                    if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().Check_if_playing())
+                    if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().CheckIfSoundPlaying())
+                    {
                         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().effectSounds[18].Play();
-
+                    }
                 }
                 Destroy(collision.gameObject);
             }
@@ -141,8 +135,6 @@ public class OpponentItemManager : MonoBehaviour
                 Destroy(collision.gameObject);
             }
         }
-
-
     }
     private IEnumerator OnTriggerEnter(Collider other)
     {
@@ -153,7 +145,6 @@ public class OpponentItemManager : MonoBehaviour
             for (int i = 0; i < 5; i++)
             {
                 other.transform.GetChild(0).GetChild(i).GetComponent<ParticleSystem>().Play();
-
             }
 
             //start hiding stuff
@@ -177,21 +168,18 @@ public class OpponentItemManager : MonoBehaviour
 
             yield return new WaitForSeconds(2);
             if (!already_has_item && !RACE_MANAGER.RACE_COMPLETED)
+            {
                 ItemSelect();
-
-
+            }
         }
 
-        
-
-        if(other.gameObject.tag == "Explosion" && !StarPowerUp)
+        if (other.gameObject.tag == "Explosion" && !StarPowerUp)
         {
-            hitByBanana();//effect as if a normal Banana hit the opponent
+            HitByBanana();//effect as if a normal Banana hit the opponent
             if (other.gameObject.name != "Explosion Blue Shell" && other.gameObject.GetComponent<Bobomb>().whoThrewBomb == "Player")
             {
                 GameObject.Find("Player").GetComponent<Player>().Driver.SetTrigger("HitItem");
             }
-
         }
         if (path.GetChild(currentWayPoint) == other.transform || path2.GetChild(currentWayPoint) == other.transform)
         {
@@ -203,7 +191,6 @@ public class OpponentItemManager : MonoBehaviour
             {
                 currentWayPoint++;
             }
-
         }
     }
 
@@ -225,16 +212,15 @@ public class OpponentItemManager : MonoBehaviour
         current_item = ItemsPossible[index].name;
         itemIndex = index;
 
-        if(current_item == "GoldenMushroom")
+        if (current_item == "GoldenMushroom")
         {
             goldenMushroomTimer = 10;
         }
     }
 
     //these methods control what happens when hit by an item
-    public void hitByShell() //same method for red and green shells since they do the exact same effect when hitting the player
+    public void HitByShell() //same method for red and green shells since they do the exact same effect when hitting the player
     {
-
         if (!invincible)
         {
             GetComponent<Minimap>().playerInMap.GetComponent<Animator>().SetTrigger("Spin");
@@ -243,13 +229,9 @@ public class OpponentItemManager : MonoBehaviour
             invincible = true;
             HitByShell_ = true;
         }
-           
-
-            
-        
-
     }
-    public void hitByBanana()
+
+    public void HitByBanana()
     {
         if (!invincible)
         {
@@ -261,8 +243,7 @@ public class OpponentItemManager : MonoBehaviour
         }
     }
 
-
-    void usingItem()
+    void UsingItem()
     {
         timeHavingItem += Time.deltaTime; //stores the time for how long the opponent has an item for
         tripleitemActionTime += Time.deltaTime; //will be used as a timer for when the next item in the triple should be used 
@@ -280,7 +261,7 @@ public class OpponentItemManager : MonoBehaviour
             {
                 if (hit.collider.tag == "Opponent" || hit.collider.tag == "Player")
                 {
-                    StartCoroutine(useShell(-1, shellposBack));
+                    StartCoroutine(UseShell(-1, shellposBack));
                     already_has_item = false;
                     ai_script.DriverAnim.SetTrigger("ThrowBack");
                     ai_script.DriverAnim.SetBool("hasItem", false);
@@ -293,24 +274,24 @@ public class OpponentItemManager : MonoBehaviour
             {
                 if (hit.collider.tag == "Opponent" || hit.collider.tag == "Player")
                 {
-                    StartCoroutine(useShell(1, shellPos));
+                    StartCoroutine(UseShell(1, shellPos));
                     already_has_item = false;
                     ai_script.DriverAnim.SetTrigger("ThrowForward");
                     ai_script.DriverAnim.SetBool("hasItem", false);
-                }    
+                }
             }
-            else if(timeHavingItem > 5)
+            else if (timeHavingItem > 5)
             {
-                if(lap_counter.Position != 1)
+                if (lap_counter.Position != 1)
                 {
-                    StartCoroutine(useShell(1, shellPos));
+                    StartCoroutine(UseShell(1, shellPos));
                     already_has_item = false;
                     ai_script.DriverAnim.SetTrigger("ThrowForward");
                     ai_script.DriverAnim.SetBool("hasItem", false);
                 }
                 else
                 {
-                    StartCoroutine(useShell(-1, shellposBack));
+                    StartCoroutine(UseShell(-1, shellposBack));
                     already_has_item = false;
                     ai_script.DriverAnim.SetBool("hasItem", false);
                     ai_script.DriverAnim.SetTrigger("ThrowBack");
@@ -318,9 +299,9 @@ public class OpponentItemManager : MonoBehaviour
                 }
             }
         }
-        else if(current_item == "RedShell")
+        else if (current_item == "RedShell")
         {
-            if(lap_counter.Position == 1)
+            if (lap_counter.Position == 1)
             {
                 RaycastHit hit = new RaycastHit();
 
@@ -329,19 +310,19 @@ public class OpponentItemManager : MonoBehaviour
                 || (Physics.Raycast(transform.position, Quaternion.AngleAxis(-5, transform.up) * -transform.forward, out hit, Mathf.Infinity, mask)
                 ))) && timeHavingItem > 5)
                 {
-                    if(hit.transform.tag == "Opponent" || hit.transform.tag == "Player")
+                    if (hit.transform.tag == "Opponent" || hit.transform.tag == "Player")
                     {
                         StartCoroutine(useRedShell(-1, shellposBack));
                         already_has_item = false;
                         ai_script.DriverAnim.SetTrigger("ThrowBack");
                         ai_script.DriverAnim.SetBool("hasItem", false);
                         timeHavingItem = 0;
-                    }        
+                    }
                 }
             }
             else
             {
-                if(timeHavingItem > 5)
+                if (timeHavingItem > 5)
                 {
                     StartCoroutine(useRedShell(1, shellPos));
                     already_has_item = false;
@@ -351,7 +332,7 @@ public class OpponentItemManager : MonoBehaviour
                 }
             }
         }
-        else if(current_item == "Banana")
+        else if (current_item == "Banana")
         {
             RaycastHit hit = new RaycastHit();
 
@@ -360,20 +341,20 @@ public class OpponentItemManager : MonoBehaviour
                 || (Physics.Raycast(transform.position, Quaternion.AngleAxis(-5, transform.up) * -transform.forward, out hit, Mathf.Infinity, mask)
                 ))) && timeHavingItem > 2.5f)
             {
-                if(hit.transform.tag == "Opponent" || hit.transform.tag == "Player")
+                if (hit.transform.tag == "Opponent" || hit.transform.tag == "Player")
                 {
-                    StartCoroutine(spawnBanana(-1));
+                    StartCoroutine(SpawnBanana(-1));
                     already_has_item = false;
                     ai_script.DriverAnim.SetTrigger("ThrowBack");
                     ai_script.DriverAnim.SetBool("hasItem", false);
                     timeHavingItem = 0;
                 }
             }
-            else if(timeHavingItem > 8)
+            else if (timeHavingItem > 8)
             {
-                if(ai_script.path.GetChild(ai_script.current_node).tag != "DriftLeft" && ai_script.path.GetChild(ai_script.current_node).tag != "DriftRight")
+                if (ai_script.path.GetChild(ai_script.current_node).tag != "DriftLeft" && ai_script.path.GetChild(ai_script.current_node).tag != "DriftRight")
                 {
-                    StartCoroutine(spawnBanana(1));
+                    StartCoroutine(SpawnBanana(1));
                     already_has_item = false;
                     ai_script.DriverAnim.SetTrigger("ThrowForward");
                     ai_script.DriverAnim.SetBool("hasItem", false);
@@ -382,9 +363,9 @@ public class OpponentItemManager : MonoBehaviour
                 else
                 {
                     int x = Random.Range(0, 2);
-                    if(x == 0)
+                    if (x == 0)
                     {
-                        StartCoroutine(spawnBanana(-1));
+                        StartCoroutine(SpawnBanana(-1));
                         already_has_item = false;
                         ai_script.DriverAnim.SetTrigger("ThrowBack");
                         ai_script.DriverAnim.SetBool("hasItem", false);
@@ -392,7 +373,7 @@ public class OpponentItemManager : MonoBehaviour
                     }
                     else
                     {
-                        StartCoroutine(spawnBanana(1));
+                        StartCoroutine(SpawnBanana(1));
                         already_has_item = false;
                         ai_script.DriverAnim.SetBool("hasItem", false);
                         timeHavingItem = 0;
@@ -401,9 +382,9 @@ public class OpponentItemManager : MonoBehaviour
             }
 
         }
-        else if(current_item == "BlueShell")
+        else if (current_item == "BlueShell")
         {
-            if(timeHavingItem > 5 && lap_counter.Position != 1)
+            if (timeHavingItem > 5 && lap_counter.Position != 1)
             {
                 //player_script.Driver.SetTrigger("ThrowForward");
                 StartCoroutine(useBlueShell());
@@ -414,13 +395,13 @@ public class OpponentItemManager : MonoBehaviour
                 timeHavingItem = 0;
             }
         }
-        else if(current_item == "ItemBomhei") // i didn't feel like changing all the names of the gameobjects, so I just went with the default model name already there
+        else if (current_item == "ItemBomhei") // i didn't feel like changing all the names of the gameobjects, so I just went with the default model name already there
         {
-            if(timeHavingItem > 5)
+            if (timeHavingItem > 5)
             {
                 int x = Random.Range(0, 3);
 
-                if(x == 0)
+                if (x == 0)
                 {
                     //player_script.Driver.SetTrigger("ThrowForward");
                     StartCoroutine(useBobomb(1));
@@ -440,9 +421,9 @@ public class OpponentItemManager : MonoBehaviour
                 }
             }
         }
-        else if(current_item == "Mushroom")
+        else if (current_item == "Mushroom")
         {
-            if(!ai_script.driftright && !ai_script.driftleft && timeHavingItem > 5)
+            if (!ai_script.driftright && !ai_script.driftleft && timeHavingItem > 5)
             {
                 ai_script.boost_time = 2f;
                 already_has_item = false;
@@ -454,19 +435,19 @@ public class OpponentItemManager : MonoBehaviour
                 {
                     ai_script.BoostBurstPS.transform.GetChild(i).GetComponent<ParticleSystem>().Play(); //left and right included
                 }
-            } 
+            }
         }
-        else if(current_item == "BulletBillPlayer")
+        else if (current_item == "BulletBillPlayer")
         {
-            if(timeHavingItem > 5)
+            if (timeHavingItem > 5)
             {
                 current_item = "";
                 StartCoroutine(UseBullet());
             }
         }
-        else if(current_item == "TripleMushroom")
+        else if (current_item == "TripleMushroom")
         {
-            if(tripleitemActionTime > 5) //i need a way for this to get called once every 5 seconds
+            if (tripleitemActionTime > 5) //i need a way for this to get called once every 5 seconds
             {
                 if (!ai_script.driftright && !ai_script.driftleft && timeHavingItem > 5 && tripleItemCount > 0)
                 {
@@ -494,10 +475,10 @@ public class OpponentItemManager : MonoBehaviour
             }
 
         }
-        else if(current_item == "GoldenMushroom")
+        else if (current_item == "GoldenMushroom")
         {
             goldenMushroomTimer -= Time.deltaTime;
-            if(tripleitemActionTime > 2)
+            if (tripleitemActionTime > 2)
             {
                 tripleitemActionTime = 0;
                 ai_script.boost_time = 2f;
@@ -524,7 +505,7 @@ public class OpponentItemManager : MonoBehaviour
                 already_has_item = false;
             }
         }
-        else if(current_item == "TripleBananas")
+        else if (current_item == "TripleBananas")
         {
             RaycastHit hit = new RaycastHit();
 
@@ -537,10 +518,10 @@ public class OpponentItemManager : MonoBehaviour
                 {
                     if (hit.transform.tag == "Opponent" || hit.transform.tag == "Player")
                     {
-                        StartCoroutine(spawnBanana(-1));
+                        StartCoroutine(SpawnBanana(-1));
                         ai_script.DriverAnim.SetTrigger("ThrowBack");
                         tripleitemActionTime = 0;
-                        tripleItemCount--;  
+                        tripleItemCount--;
                         ItemsPossible[itemIndex].transform.GetChild(tripleItemCount).gameObject.SetActive(false); //turn off one of the three bananas
 
                     }
@@ -549,14 +530,14 @@ public class OpponentItemManager : MonoBehaviour
                 {
                     if (ai_script.path.GetChild(ai_script.current_node).tag != "DriftLeft" && ai_script.path.GetChild(ai_script.current_node).tag != "DriftRight") //if driver is not drifting (not making a sharp turn), throw forward
                     {
-                        StartCoroutine(spawnBanana(1));
+                        StartCoroutine(SpawnBanana(1));
                         ai_script.DriverAnim.SetTrigger("ThrowForward");
                         tripleitemActionTime = 0;
 
                     }
                     else //otherwise  throw back
                     {
-                        StartCoroutine(spawnBanana(-1));
+                        StartCoroutine(SpawnBanana(-1));
                         ai_script.DriverAnim.SetTrigger("ThrowBack");
                         tripleitemActionTime = 0;
                     }
@@ -564,7 +545,7 @@ public class OpponentItemManager : MonoBehaviour
                     ItemsPossible[itemIndex].transform.GetChild(tripleItemCount).gameObject.SetActive(false);
                 }
             }
-            else if(tripleItemCount <= 0)
+            else if (tripleItemCount <= 0)
             {
                 ItemsPossible[itemIndex].SetActive(false);
                 ItemsPossible[itemIndex].transform.GetChild(0).gameObject.SetActive(true);
@@ -576,7 +557,7 @@ public class OpponentItemManager : MonoBehaviour
                 tripleitemActionTime = 0;
             }
         }
-        else if(current_item == "TripleGreenShells")
+        else if (current_item == "TripleGreenShells")
         {
             RaycastHit hit = new RaycastHit();
 
@@ -590,7 +571,7 @@ public class OpponentItemManager : MonoBehaviour
                 {
                     if (hit.collider.tag == "Opponent" || hit.collider.tag == "Player")
                     {
-                        StartCoroutine(useShell(-1, shellposBack));
+                        StartCoroutine(UseShell(-1, shellposBack));
                         ai_script.DriverAnim.SetTrigger("ThrowBack");
                         tripleItemCount--;
                         tripleitemActionTime = 0;
@@ -606,7 +587,7 @@ public class OpponentItemManager : MonoBehaviour
                 {
                     if (hit.collider.tag == "Opponent" || hit.collider.tag == "Player")
                     {
-                        StartCoroutine(useShell(1, shellPos));
+                        StartCoroutine(UseShell(1, shellPos));
                         ai_script.DriverAnim.SetTrigger("ThrowForward");
                         tripleItemCount--;
                         tripleitemActionTime = 0;
@@ -618,13 +599,13 @@ public class OpponentItemManager : MonoBehaviour
                 {
                     if (lap_counter.Position != 1)
                     {
-                        StartCoroutine(useShell(1, shellPos));
+                        StartCoroutine(UseShell(1, shellPos));
                         tripleItemCount--;
                         tripleitemActionTime = 0;
                     }
                     else
                     {
-                        StartCoroutine(useShell(-1, shellposBack));
+                        StartCoroutine(UseShell(-1, shellposBack));
                         tripleItemCount--;
                         tripleitemActionTime = 0;
                         ai_script.DriverAnim.SetTrigger("ThrowBack");
@@ -645,9 +626,8 @@ public class OpponentItemManager : MonoBehaviour
                 tripleitemActionTime = 0;
             }
         }
-        else if(current_item == "TripleRedShells")
+        else if (current_item == "TripleRedShells")
         {
-
             if (tripleItemCount > 0 && tripleitemActionTime > 4)
             {
                 if (lap_counter.Position == 1)
@@ -666,8 +646,8 @@ public class OpponentItemManager : MonoBehaviour
                     tripleitemActionTime = 0;
                     ItemsPossible[itemIndex].transform.GetChild(tripleItemCount).gameObject.SetActive(false); //turn off one of the three shells
                 }
-            } 
-            else if(tripleItemCount <= 0)
+            }
+            else if (tripleItemCount <= 0)
             {
                 ItemsPossible[itemIndex].SetActive(false);
                 ItemsPossible[itemIndex].transform.GetChild(0).gameObject.SetActive(true);
@@ -679,7 +659,7 @@ public class OpponentItemManager : MonoBehaviour
                 tripleitemActionTime = 0;
             }
         }
-        else if(current_item == "ItemStar")
+        else if (current_item == "ItemStar")
         {
             if (timeHavingItem > 4)
             {
@@ -690,7 +670,7 @@ public class OpponentItemManager : MonoBehaviour
                 StartCoroutine(UseStar());
             }
         }
-        else if(current_item == "ItemCoin")
+        else if (current_item == "ItemCoin")
         {
             if (timeHavingItem > 4)
             {
@@ -703,7 +683,7 @@ public class OpponentItemManager : MonoBehaviour
         }
     }
 
-    public void useItemDOne()
+    public void UseItemDone()
     {
         already_has_item = false;
         ai_script.DriverAnim.SetBool("hasItem", false);
@@ -712,7 +692,7 @@ public class OpponentItemManager : MonoBehaviour
         tripleitemActionTime = 0;
     }
 
-    IEnumerator useShell(int direction, Transform position)
+    IEnumerator UseShell(int direction, Transform position)
     {
 
         yield return new WaitForSeconds(0.15f);
@@ -723,7 +703,7 @@ public class OpponentItemManager : MonoBehaviour
             clone.GetComponent<GreenShell>().velocityMagOriginal = 6000;
             clone.GetComponent<GreenShell>().AntiGravity = ai_script.AntiGravity;
             yield return new WaitForSeconds(0.25f);
-            if(current_item !="TripleGreenShells")
+            if (current_item != "TripleGreenShells")
                 ItemsPossible[itemIndex].SetActive(false); //hand shell
 
         }
@@ -734,21 +714,9 @@ public class OpponentItemManager : MonoBehaviour
             clone.GetComponent<GreenShell>().AntiGravity = ai_script.AntiGravity;
             yield return new WaitForSeconds(0.25f);
             if (current_item != "TripleGreenShells")
-                ItemsPossible[itemIndex].SetActive(false); //hand shell
-
-            /*
-            for (int i = 0; i < 75; i++)
             {
-                if (!StarPowerUp)
-                    player_script.current_face_material = player_script.faces[1]; //look left
-                yield return new WaitForSeconds(0.01f);
+                ItemsPossible[itemIndex].SetActive(false); //hand shell                                         
             }
-            if (!StarPowerUp)
-                player_script.current_face_material = player_script.faces[2]; //blink
-            yield return new WaitForSeconds(0.1f);
-            if (!StarPowerUp)
-                player_script.current_face_material = player_script.faces[0];//normal
-            */
         }
         clone.GetComponent<GreenShell>().who_threw_shell = gameObject.name;
     }
@@ -760,13 +728,14 @@ public class OpponentItemManager : MonoBehaviour
             GameObject clone = Instantiate(redShell, position.position, position.rotation);
             clone.SetActive(true);
             clone.GetComponent<RedShell>().who_threw_shell = gameObject.name;
-            //clone.transform.forward = transform.forward;
             clone.GetComponent<RedShell>().current_node = currentWayPoint;
             clone.GetComponent<RedShell>().AntiGravity = ai_script.AntiGravity;
 
             yield return new WaitForSeconds(0.25f);
-            if(current_item != "TripleRedShells")
+            if (current_item != "TripleRedShells")
+            {
                 ItemsPossible[itemIndex].SetActive(false); //hand shell
+            }
         }
         else if (direction == -1)
         {
@@ -785,25 +754,12 @@ public class OpponentItemManager : MonoBehaviour
 
             yield return new WaitForSeconds(0.25f);
             if (current_item != "TripleRedShells")
-                ItemsPossible[itemIndex].SetActive(false); //hand shell
-
-            /*
-            for (int i = 0; i < 75; i++)
             {
-                if (!StarPowerUp)
-                    player_script.current_face_material = player_script.faces[1]; //make sure it is not changed, by repeating in for loop
-                yield return new WaitForSeconds(0.01f);
+                ItemsPossible[itemIndex].SetActive(false); //hand shell
             }
-            if (!StarPowerUp)
-                player_script.current_face_material = player_script.faces[2]; //blink
-            yield return new WaitForSeconds(0.1f);
-            if (!StarPowerUp)
-                player_script.current_face_material = player_script.faces[0];//normal
-
-            */
         }
     }
-    IEnumerator spawnBanana(int direction)
+    IEnumerator SpawnBanana(int direction)
     {
         GameObject clone;
         if (direction == 1)//forward
@@ -819,27 +775,11 @@ public class OpponentItemManager : MonoBehaviour
         {
             yield return new WaitForSeconds(0.25f);
             clone = Instantiate(Banana, shellposBack.position, bananaPos.rotation);
-            if(current_item != "TripleBananas")
-                ItemsPossible[itemIndex].SetActive(false); //hand banana
-                                                       /*
-                                                       for (int i = 0; i < 75; i++)
-                                                       {
-                                                           if (!StarPowerUp)
-                                                               player_script.current_face_material = player_script.faces[1]; //make sure it is not changed, by repeating in for loop
-                                                           yield return new WaitForSeconds(0.01f);
-                                                       }
-                                                       item_gameobjects[1].SetActive(false);
-                                                       if (!StarPowerUp)
-                                                           player_script.current_face_material = player_script.faces[2]; //blink
-                                                       yield return new WaitForSeconds(0.1f);
-                                                       if (!StarPowerUp)
-                                                           player_script.current_face_material = player_script.faces[0];//normal
-                                                       clone.GetComponent<Banana>().whoThrewBanana = gameObject.name;
-
-                                                       */
+            if (current_item != "TripleBananas")
+            { 
+                ItemsPossible[itemIndex].SetActive(false); //hand banana                                             
+            }
         }
-
-
     }
     IEnumerator useBlueShell()
     {
@@ -860,7 +800,7 @@ public class OpponentItemManager : MonoBehaviour
 
             GameObject clone = Instantiate(bobomb, bananaPos.position, bananaPos.rotation);
             clone.SetActive(true);
-            //clone.GetComponent<Rigidbody>().drag = 10;
+
             clone.GetComponent<Bobomb>().bomb_thrown(transform.InverseTransformDirection(GetComponent<Rigidbody>().velocity).z * 400);
             clone.GetComponent<AudioSource>().enabled = true;
 
@@ -904,7 +844,7 @@ public class OpponentItemManager : MonoBehaviour
 
         //disabling the player renderers
         bulletPlayer.SetActive(true);
-        for(int i = 0; i < playerRenderers.Length; i++)
+        for (int i = 0; i < playerRenderers.Length; i++)
         {
             playerRenderers[i].enabled = false;
         }
@@ -936,30 +876,17 @@ public class OpponentItemManager : MonoBehaviour
     {
         ItemsPossible[itemIndex].SetActive(false);
         StarPowerUp = true;
-        
+
         for (int i = 0; i < playerRenderers.Length; i++)
         {
             playerRenderers[i].material = starMat;
             playerRenderers[i].sharedMaterial = starMat;
         }
-        
+
         for (int i = 0; i < starPS.transform.childCount; i++)
         {
             starPS.transform.GetChild(i).GetComponent<ParticleSystem>().Play();
         }
-        
-        /*
-        if (playersounds.Check_if_playing())
-        {
-            playersounds.MarioStarSounds[playersounds.star_count_sound].Play();
-            playersounds.star_count_sound++;
-            if (playersounds.star_count_sound > 2)
-            {
-                playersounds.star_count_sound = 0;
-            }
-        }
-        */
-
 
         yield return new WaitForSeconds(7.5f);
 
@@ -969,15 +896,14 @@ public class OpponentItemManager : MonoBehaviour
             playerRenderers[i].material = normalMaterials[i];
             playerRenderers[i].sharedMaterial = normalMaterials[i];
         }
-        
+
         for (int i = 0; i < starPS.transform.childCount; i++)
         {
             starPS.transform.GetChild(i).GetComponent<ParticleSystem>().Stop();
         }
         closeToPlayer = false;
-        
-
     }
+
     IEnumerator UseCoin()
     {
         GameObject clone = Instantiate(coin, coinPos.position, coinPos.rotation);
@@ -985,10 +911,4 @@ public class OpponentItemManager : MonoBehaviour
         ItemsPossible[itemIndex].SetActive(false);
         yield return new WaitForSeconds(0.1f);
     }
-
-
-
-
-
-
 }

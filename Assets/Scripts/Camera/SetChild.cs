@@ -1,16 +1,18 @@
 ﻿using UnityEngine;
-using System.Collections;
+
 [ExecuteInEditMode]
-public class SetChild : MonoBehaviour {
+public class SetChild : MonoBehaviour
+{
+    void OnEnable()
+    {
+        GetComponent<Camera>().targetTexture = SetRes.SceneBuffer;
+    }
 
-// Use this for initialization
-	void OnEnable () {
-		GetComponent<Camera>().targetTexture = SetRes.SceneBuffer;
-	}
-	// Update is called once per frame
-	void Update () {
-
-		if(!GetComponent<Camera>().targetTexture)
-			GetComponent<Camera>().targetTexture = SetRes.SceneBuffer;
-	}
+    void Update()
+    {
+        if (!GetComponent<Camera>().targetTexture)
+        {
+            GetComponent<Camera>().targetTexture = SetRes.SceneBuffer;
+        }
+    }
 }

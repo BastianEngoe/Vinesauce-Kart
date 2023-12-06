@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class JumpToAnimationTime : MonoBehaviour
 {
@@ -11,22 +9,15 @@ public class JumpToAnimationTime : MonoBehaviour
     void Start()
     {
         anim = gameObject.GetComponent<Animator>();
-        jumpToTime(currentAnimationName(), normalizedTime);
-
+        JumpToTime(CurrentAnimationName(), normalizedTime);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    void jumpToTime(string name, float nTime)
+    void JumpToTime(string name, float nTime)
     {
         anim.Play(name, 0, nTime);
     }
 
-    string currentAnimationName()
+    string CurrentAnimationName()
     {
         var currAnimName = "";
         foreach (AnimationClip clip in anim.runtimeAnimatorController.animationClips)
@@ -38,6 +29,5 @@ public class JumpToAnimationTime : MonoBehaviour
         }
 
         return currAnimName;
-
     }
 }

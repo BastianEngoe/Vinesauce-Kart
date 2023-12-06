@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Camerafollow : MonoBehaviour
 {
@@ -30,15 +28,12 @@ public class Camerafollow : MonoBehaviour
     public float raceEndFOV = 0;
     float none = 0;
 
-
-    // Start is called before the first frame update
     void Start()
     {
         playerscript = player.GetComponent<Player>();
         playerscriptItem = player.GetComponent<ItemManager>();
     }
 
-    // Update is called once per frame
     void LateUpdate()
     {
         if (!playerscript.GetComponent<OutOfBounds>().PlayerBeingMoved)
@@ -57,13 +52,12 @@ public class Camerafollow : MonoBehaviour
                 }
                 else
                 {
-                    upDist = upRay.GetPoint(offset-0.8f);
+                    upDist = upRay.GetPoint(offset - 0.8f);
                 }
                 transform.position = upDist;
             }
             else
             {
-
                 {
                     transform.position = player.position + new Vector3(0, offset, 0);
                 }
@@ -76,20 +70,17 @@ public class Camerafollow : MonoBehaviour
             else
             {
 
-                    float angle = transform.localEulerAngles.x;
-                    angle = (angle > 180) ? angle - 360 : angle;
+                float angle = transform.localEulerAngles.x;
+                angle = (angle > 180) ? angle - 360 : angle;
 
                 if (playerscript.GLIDER_FLY)
                 {
                     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(glideAngleX, player.eulerAngles.y, glideAngleZ), 1 * Time.deltaTime);
                 }
-                else if(playerscript.trickBoostPending && !playerscript.antiGravity)
+                else if (playerscript.trickBoostPending && !playerscript.antiGravity)
                 {
                     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, player.eulerAngles.y, 0), 3 * Time.deltaTime);
                 }
-
-
-
             }
 
             if (playerscript.JUMP_PANEL)
@@ -113,7 +104,6 @@ public class Camerafollow : MonoBehaviour
             {
                 transform.GetChild(0).localRotation = Quaternion.Slerp(transform.GetChild(0).localRotation, Quaternion.Euler(2, transform.GetChild(0).localEulerAngles.y, 0), 3 * Time.deltaTime);
             }
-
 
             if ((playerscript.Boost || playerscript.trickBoostPending) && !playerscriptItem.isBullet && !RACE_MANAGER.RACE_COMPLETED)
             {
@@ -146,12 +136,10 @@ public class Camerafollow : MonoBehaviour
         if (RACE_MANAGER.RACE_COMPLETED)
         {
             transform.localScale = new Vector3(1, 1, 1);
-            if(raceEndFOV > 1)
+            if (raceEndFOV > 1)
             {
                 transform.GetChild(0).GetChild(0).GetComponent<Camera>().fieldOfView = raceEndFOV;
             }
         }
-
-
     }
 }

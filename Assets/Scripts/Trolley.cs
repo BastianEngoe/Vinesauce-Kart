@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Trolley : MonoBehaviour
@@ -13,7 +12,7 @@ public class Trolley : MonoBehaviour
     public bool antiGravity = false;
     public bool isSubmarine = false;
     public LayerMask mask;
-    // Start is called before the first frame update
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -22,23 +21,23 @@ public class Trolley : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        move();
-        steer();
+        Move();
+        Steer();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.transform == path.GetChild(currentWayPoint))
+        if (other.transform == path.GetChild(currentWayPoint))
         {
             currentWayPoint++;
-            if(currentWayPoint == path.childCount -1)
+            if (currentWayPoint == path.childCount - 1)
             {
                 Destroy(gameObject);
             }
         }
     }
 
-    private void move()
+    private void Move()
     {
         Vector3 vel = transform.forward * speed;
 
@@ -70,7 +69,7 @@ public class Trolley : MonoBehaviour
         }
     }
 
-    void steer()
+    void Steer()
     {
         Vector3 lookat = path.GetChild(currentWayPoint).position;
 
@@ -89,7 +88,7 @@ public class Trolley : MonoBehaviour
         transform.Rotate(0, y / 20, 0, Space.Self);
     }
 
-    public IEnumerator hitByPowerup()
+    public IEnumerator HitByPowerup()
     {
         Vector3 position = transform.position;
         Vector3 endPos = new Vector3(transform.position.x, transform.position.y + 10, transform.position.z);

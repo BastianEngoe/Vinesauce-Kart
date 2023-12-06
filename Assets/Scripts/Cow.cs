@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Cow : MonoBehaviour
@@ -18,9 +17,6 @@ public class Cow : MonoBehaviour
 
     public LayerMask mask;
 
-
-
-    // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -33,24 +29,16 @@ public class Cow : MonoBehaviour
 
         soundCount = Random.Range(2, 5);
 
-
         //int x = Random.Range(0, 3);
         //StartCoroutine(playSound(x));
-
-
-        
-
-
-
     }
 
-    // Update is called once per frame
     void Update()
     {
         GroundNormalRotation();
-        moveOnPath();
+        MoveOnPath();
 
-        if(RACE_MANAGER.RACE_STARTED && !raceStarted)
+        if (RACE_MANAGER.RACE_STARTED && !raceStarted)
         {
             raceStarted = true;
             transform.position = startPos;
@@ -59,24 +47,20 @@ public class Cow : MonoBehaviour
 
     void GroundNormalRotation()
     {
-       
-            //ground normal rotation
-       Ray ground = new Ray(transform.position, Vector3.down);
-       RaycastHit hit;
+        //ground normal rotation
+        Ray ground = new Ray(transform.position, Vector3.down);
+        RaycastHit hit;
         if (Physics.Raycast(ground, out hit, 10, mask) && hit.normal.y > 0.5f)
         {
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.up * 2, hit.normal) * transform.rotation, 3f * Time.deltaTime);
         }
-
-
     }
 
-    void moveOnPath()
+    void MoveOnPath()
     {
         Vector3 vel = transform.forward * speed;
         vel.y = rb.velocity.y;
         rb.velocity = vel;
-
 
         //angle calc
         Vector3 myangle = path.GetChild(currentNode).position - transform.position;
@@ -89,22 +73,20 @@ public class Cow : MonoBehaviour
 
         transform.eulerAngles = new Vector3(transform.eulerAngles.x, y, transform.eulerAngles.z);
 
-        if(Vector3.Distance(path.GetChild(currentNode).position, transform.position) < 5)
+        if (Vector3.Distance(path.GetChild(currentNode).position, transform.position) < 5)
         {
             currentNode++;
         }
 
-        if(currentNode == path.childCount)
+        if (currentNode == path.childCount)
         {
             currentNode = 0;
         }
-
-
     }
 
-    public bool checkIfPlayingSounds()
+    public bool CheckIfPlayingSounds()
     {
-        for(int i = 2; i < transform.childCount; i++)
+        for (int i = 2; i < transform.childCount; i++)
         {
             if (transform.GetChild(i).GetComponent<AudioSource>().isPlaying)
             {
@@ -114,7 +96,7 @@ public class Cow : MonoBehaviour
         return true;
     }
 
-    IEnumerator playSound(int x)
+    IEnumerator PlaySound(int x)
     {
         yield return new WaitForSeconds(x);
 
@@ -124,7 +106,7 @@ public class Cow : MonoBehaviour
 
             for (int i = 0; i < otherCows.Length; i++)
             {
-                if (!otherCows[i].GetComponent<Cow>().checkIfPlayingSounds())
+                if (!otherCows[i].GetComponent<Cow>().CheckIfPlayingSounds())
                 {
                     cowsPlayingSounds++;
                 }
@@ -142,15 +124,14 @@ public class Cow : MonoBehaviour
 
             yield return new WaitForSeconds(0.5f);
         }
-        
     }
 
-    public IEnumerator hitByPowerup()
+    public IEnumerator HitByPowerup()
     {
         Vector3 position = transform.position;
         Vector3 endPos = new Vector3(transform.position.x, transform.position.y + 10, transform.position.z);
 
-        for(int i = 0; i < 15; i++)
+        for (int i = 0; i < 15; i++)
         {
             transform.position = Vector3.SlerpUnclamped(transform.position, endPos, 6 * Time.deltaTime);
             yield return new WaitForSeconds(0.02f);
@@ -160,10 +141,5 @@ public class Cow : MonoBehaviour
             transform.position = Vector3.SlerpUnclamped(transform.position, position, 6 * Time.deltaTime);
             yield return new WaitForSeconds(0.02f);
         }
-
     }
-    
-
-
-
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,28 +21,25 @@ public class LapCounter : MonoBehaviour
     public Text[] UIDisplayLap;
 
     private RACE_MANAGER rm;
-    // Start is called before the first frame update
+
     void Start()
     {
         checkpointsVisited = new bool[checkpoints.childCount];
-        for(int i = 0; i < checkpointsVisited.Length; i++)
+        for (int i = 0; i < checkpointsVisited.Length; i++)
         {
             checkpointsVisited[i] = false;
         }
         rm = GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-
         if (currentCheckpointVal >= checkpoints.childCount)
         {
             currentCheckpointVal = 0;
         }
 
-        calculateDist();
-
+        CalculateDist();
 
         if (gameObject.tag == "Player" && LAPCOUNT <= rm.MAXLAPS)
         {
@@ -51,29 +47,28 @@ public class LapCounter : MonoBehaviour
             UIDisplayLap[1].text = LAPCOUNT + "/" + rm.MAXLAPS;
 
         }
+
         if (gameObject.tag == "Player" && LAPCOUNT > rm.MAXLAPS && endPosition == 0)
         {
             RACE_MANAGER.RACE_COMPLETED = true;
             endPosition = Position;
-            GetComponent<Player>().stopDrift();
-            StartCoroutine(stopDriftRot());
+            GetComponent<Player>().StopDrift();
+            StartCoroutine(StopDriftRot());
         }
-
-
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.transform.tag == "NextLapCollider")
         {
-            if (checkAllPoints())
+            if (CheckAllPoints())
             {
                 LAPCOUNT++;
                 for (int i = 0; i < checkpointsVisited.Length; i++)
                 {
                     checkpointsVisited[i] = false;
                 }
-                if(gameObject.tag != "Player")
+                if (gameObject.tag != "Player")
                 {
                     int max = RACE_MANAGER.allPaths.childCount;
 
@@ -81,7 +76,6 @@ public class LapCounter : MonoBehaviour
 
                     GetComponent<ComputerDriver>().path = RACE_MANAGER.allPaths.GetChild(rand); //assigning a new path
                 }
-
             }
         }
         else if (currentCheckpointVal < checkpoints.childCount && other.transform == checkpoints.GetChild(currentCheckpointVal))
@@ -89,21 +83,14 @@ public class LapCounter : MonoBehaviour
             checkpointsVisited[currentCheckpointVal] = true;
             currentCheckpointVal++;
             totalCheckpointVal++;
-
-            
         }
-
-
-
-
-
     }
 
-    bool checkAllPoints()
+    bool CheckAllPoints()
     {
-        for(int i = 0; i < checkpointsVisited.Length; i++)
+        for (int i = 0; i < checkpointsVisited.Length; i++)
         {
-            if(checkpointsVisited[i] == false)
+            if (checkpointsVisited[i] == false)
             {
                 return false;
             }
@@ -112,21 +99,20 @@ public class LapCounter : MonoBehaviour
         return true;
     }
 
-    IEnumerator stopDriftRot()
+    IEnumerator StopDriftRot()
     {
- 
-            for (int i = 0; i < 120; i++)
-            {
-                yield return new WaitForSeconds(0.01f);
-                transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, 0, 0), 8f * Time.deltaTime);
-            }
+        for (int i = 0; i < 120; i++)
+        {
+            yield return new WaitForSeconds(0.01f);
+            transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, 0, 0), 8f * Time.deltaTime);
+        }
     }
 
-    void calculateDist()
+    void CalculateDist()
     {
         Vector3 trackDirection;
 
-        if (currentCheckpointVal-1 >= 0)
+        if (currentCheckpointVal - 1 >= 0)
         {
             trackDirection = checkpoints.GetChild(currentCheckpointVal).position - checkpoints.GetChild(currentCheckpointVal - 1).position;
         }
@@ -138,9 +124,5 @@ public class LapCounter : MonoBehaviour
         Vector3 playerToGoal = transform.position - checkpoints.GetChild(currentCheckpointVal).transform.position;
         Vector3 projectedPlayerToGoal = Vector3.Project(playerToGoal, trackDirection);
         distanceToNextCheckpoint = projectedPlayerToGoal.magnitude;
-
-
-        //distanceToNextCheckpoint = Vector3.Distance(transform.position, checkpoints.GetChild(currentCheckpointVal).position);
-
     }
 }

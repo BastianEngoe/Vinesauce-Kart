@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -57,7 +56,6 @@ public class Player : MonoBehaviour
     public Transform exhaustDust;
     public Transform AccelBeforeStartDust;
 
-
     [Header("Particles and Tires")]
 
     //particle colors
@@ -82,7 +80,7 @@ public class Player : MonoBehaviour
     public GameObject glider;
     [HideInInspector]
     public bool GLIDER_FLY = false;
-    private float glideAngleZ=0;
+    private float glideAngleZ = 0;
     private float glideAngleX = 0;
     private bool cancelAddforceDown = false; //in some areas, we want not too strong gravity
     bool glider_close_confirm = false; //to prevent  from closing to early
@@ -95,7 +93,6 @@ public class Player : MonoBehaviour
     public bool JUMP_PANEL = false;
     private float jumpPanelUpForce = -250000;
     private float jumpPanelDownForce = 0;
-
 
     public Animator Driver;
 
@@ -157,8 +154,6 @@ public class Player : MonoBehaviour
     float reversingTime = 0;
     float blinkingTimeCounter = 0;
 
-
-
     //tricks
     [HideInInspector]
     public bool trickAvailable = false;
@@ -192,12 +187,8 @@ public class Player : MonoBehaviour
     private bool IN_WATER = false;
     public Transform propeller;
 
-
     public Camerafollow Cam;
 
-
-
-    // Start is called before the first frame update
     void Start()
     {
         kartMat.SetVector("Vector4_70BBF882", new Vector4(0, 0, 0, 0));
@@ -221,7 +212,6 @@ public class Player : MonoBehaviour
         {
             tireLocalPositions[i] = TireParents[i].transform.localPosition;
         }
-
     }
 
     private void Update()
@@ -231,20 +221,19 @@ public class Player : MonoBehaviour
 
             trickAvailable = false;
             trickBoostPending = true;
-            StartCoroutine(trickJump());
+            StartCoroutine(TrickJump());
         }
         //drift input
-        if(RACE_MANAGER.RACE_STARTED && !item_manager.isBullet && !RACE_MANAGER.RACE_COMPLETED)
+        if (RACE_MANAGER.RACE_STARTED && !item_manager.isBullet && !RACE_MANAGER.RACE_COMPLETED)
         {
             Drift();
         }
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
 
-        if (GLIDER_FLY )
+        if (GLIDER_FLY)
         {
             groundRayDist = 3;
         }
@@ -258,7 +247,7 @@ public class Player : MonoBehaviour
             groundRayDist = 2;
         }
 
-        mario_face();
+        ShaderUpdate();
 
         //if the race has started, but not completed
         if (RACE_MANAGER.RACE_STARTED && !item_manager.isBullet && !RACE_MANAGER.RACE_COMPLETED)
@@ -269,7 +258,7 @@ public class Player : MonoBehaviour
             playersounds.effectSounds[11].Stop();
 
             //before start boost
-            if(beforeStartAccelTime > 1 && beforeStartAccelTime < 2)
+            if (beforeStartAccelTime > 1 && beforeStartAccelTime < 2)
             {
                 Boost_time = 1;
                 playersounds.effectSounds[13].Play();
@@ -280,7 +269,7 @@ public class Player : MonoBehaviour
                 {
                     BoostBurstPS.transform.GetChild(i).GetComponent<ParticleSystem>().Play(); //left and right included
                 }
-                for(int i = 0; i < 60; i++)
+                for (int i = 0; i < 60; i++)
                 {
                     if (Input.GetKey(KeyCode.Space))
                     {
@@ -296,11 +285,11 @@ public class Player : MonoBehaviour
 
             }
 
-            player_animations();
-            boostEffects();
-            movingCarParts();
+            PlayerAnimations();
+            BoostEffects();
+            MovingCarParts();
             GroundNormalRotation();
-            tireDirtEffect();
+            TireDirtEffect();
 
 
 
@@ -316,12 +305,9 @@ public class Player : MonoBehaviour
                 dustParticles.GetChild(1).GetComponent<ParticleSystem>().Stop();
 
             }
-            
-            
 
             exhaustDust.GetChild(0).GetComponent<ParticleSystem>().Stop();
             exhaustDust.GetChild(1).GetComponent<ParticleSystem>().Stop();
-
 
             //constant subtract of boost time
             if (Boost_time > 0)
@@ -339,7 +325,6 @@ public class Player : MonoBehaviour
                 Boost_time = 0;
                 max_speed = desiredMaxSpeed;
                 Boost = false;
-
             }
         }
         //if you are a bullet
@@ -351,8 +336,10 @@ public class Player : MonoBehaviour
             Vector3 lookat = item_manager.path.GetChild(item_manager.currentWayPoint).position;
 
             float dir = 0;
-            if(antiGravity)
+            if (antiGravity)
+            {
                 rb.AddRelativeForce(Vector3.down * 5000 * Time.deltaTime, ForceMode.Acceleration);
+            }
             else
             {
                 rb.AddForce(Vector3.down * 5000 * Time.deltaTime, ForceMode.Acceleration);
@@ -361,7 +348,6 @@ public class Player : MonoBehaviour
             {
                 //ground normal rotation
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.up * 2, hit.normal) * transform.rotation, 7.5f * Time.deltaTime);
-
 
                 //MOVE FORWARD
                 currentspeed = 130;
@@ -372,7 +358,6 @@ public class Player : MonoBehaviour
             Vector3 angle = Vector3.Cross(transform.forward, myangle);
             dir = Vector3.Dot(angle, transform.up);
 
-
             float none = 0;
 
             // maybe get dir, and make float y lerp to that dir value, and then rotate y axis (space.self) according to that y value or something
@@ -380,11 +365,9 @@ public class Player : MonoBehaviour
             //float y = Mathf.SmoothDamp(transform.eulerAngles.y, transform.eulerAngles.y + dir, ref none, 2.5f * Time.deltaTime);
             y = Mathf.SmoothDamp(y, dir, ref none, 2.5f * Time.deltaTime);
 
-
-
             transform.Rotate(0, y / 6, 0, Space.Self);
         }
-        else if(!RACE_MANAGER.RACE_STARTED && !RACE_MANAGER.RACE_COMPLETED) //before race starts
+        else if (!RACE_MANAGER.RACE_STARTED && !RACE_MANAGER.RACE_COMPLETED) //before race starts
         {
             GroundNormalRotation();
             if (Input.GetKey(KeyCode.Space))
@@ -420,8 +403,8 @@ public class Player : MonoBehaviour
         {
 
             raceEndTime += Time.deltaTime;
-            steerOnPath();
-            moveOnPath();
+            SteerOnPath();
+            MoveOnPath();
             raceEndCarMoveParts();
             {
                 Boost_time = 0;
@@ -429,12 +412,12 @@ public class Player : MonoBehaviour
                 for (int i = 0; i < 2; i++)
                 {
                     ParticleSystem currentboost = Boost_PS.transform.GetChild(i).GetComponent<ParticleSystem>();
-                    currentboost.Stop();                         
+                    currentboost.Stop();
                 }
             }
-            if(lapCounter.endPosition < 6)
+            if (lapCounter.endPosition < 6)
             {
-                if(raceEndTime % 4 < 0.2f)
+                if (raceEndTime % 4 < 0.2f)
                 {
                     MarioFace.material = faces[2];
                 }
@@ -442,7 +425,6 @@ public class Player : MonoBehaviour
                 {
                     MarioFace.material = faces[3];
                 }
-
             }
             else
             {
@@ -454,7 +436,7 @@ public class Player : MonoBehaviour
 
                 float currTime = time * progress;
 
-                if(currTime < 3.25 || currTime > 4.1)
+                if (currTime < 3.25 || currTime > 4.1)
                 {
                     MarioFace.material = faces[7];
                 }
@@ -462,31 +444,23 @@ public class Player : MonoBehaviour
                 {
                     MarioFace.material = faces[4];
                 }
-
             }
         }
 
-
-
-        kartAnims();
-        blinking();
-        lookAtOpponent();
-
+        KartAnims();
+        Blinking();
+        LookAtOpponent();
 
         if (trickBoostPending && !JUMP_PANEL)
         {
             transform.localRotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, transform.localEulerAngles.y, transform.localEulerAngles.z), 1f * Time.deltaTime);
         }
-
-        
-
-
     }
 
 
     private void OnCollisionStay(Collision other)
     {
-        if(other.gameObject.tag == "Ground" || other.gameObject.tag == "AntiGravity")
+        if (other.gameObject.tag == "Ground" || other.gameObject.tag == "AntiGravity")
         {
             grounded = true;
             if (other.gameObject.tag == "Ground" || other.gameObject.tag == "Dirt")
@@ -497,34 +471,30 @@ public class Player : MonoBehaviour
                 }
             }
         }
-        if(other.gameObject.tag == "Dirt")
+        if (other.gameObject.tag == "Dirt")
         {
             max_speed = 30;
             grounded = false;
         }
-        if(other.gameObject.tag == "Boost")
+        if (other.gameObject.tag == "Boost")
         {
             Boost_time = 2;
             grounded = true;
 
             Boost = true;
             max_speed = boost_speed;
-            if (playersounds.Check_if_playing())
+            if (playersounds.CheckIfSoundPlaying())
             {
                 playersounds.Mario_Boost_Sounds[playersounds.sound_count].Play();
                 playersounds.sound_count++;
             }
-
         }
 
     }
     private IEnumerator OnCollisionEnter(Collision collision)
     {
-
         if (collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Dirt")
         {
-         
-
             //when I hit the ground after jumping off a jump panel
             if (JUMP_PANEL)
             {
@@ -536,7 +506,7 @@ public class Player : MonoBehaviour
 
             if (trickBoostPending)
             {
-                if(Boost_time < 0.9f)
+                if (Boost_time < 0.9f)
                 {
                     Boost_time = 0.9f;
                 }
@@ -547,41 +517,34 @@ public class Player : MonoBehaviour
             }
         }
 
-        if((collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Dirt") && glider_close_confirm)
+        if ((collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Dirt") && glider_close_confirm)
         {
             if (GLIDER_FLY && !item_manager.isBullet)
             {
                 playersounds.effectSounds[4].Play();
                 playersounds.effectSounds[5].Play();
-
-                
-
             }
 
             GLIDER_FLY = false;
             glideTrick = false;
             glidingTime = 0;
-          
+
             playersounds.effectSounds[3].Stop();
             glider.GetComponent<Animator>().SetBool("GliderOpen", false);
             glider.GetComponent<Animator>().SetBool("GliderClose", true);
 
-            for(int i = 0; i < 60; i++)
+            for (int i = 0; i < 60; i++)
             {
                 groundRayDist = 6;
                 yield return new WaitForSeconds(0.01f);
             }
             groundRayDist = 1;
-
-
-
-
         }
         if (collision.gameObject.tag == "Banana")//regular banana
         {
-            if(collision.gameObject.GetComponent<Banana>().lifetime > 0.2f && !item_manager.StarPowerUp && !item_manager.isBullet)
+            if (collision.gameObject.GetComponent<Banana>().lifetime > 0.2f && !item_manager.StarPowerUp && !item_manager.isBullet)
             {
-                StartCoroutine(hitByBanana());
+                StartCoroutine(HitByBanana());
                 Destroy(collision.gameObject);
             }
             if (item_manager.StarPowerUp)
@@ -593,10 +556,10 @@ public class Player : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-       
-        if(collision.gameObject.tag == "Opponent" && Vector3.Distance(transform.position, collision.transform.position) < 5)
+
+        if (collision.gameObject.tag == "Opponent" && Vector3.Distance(transform.position, collision.transform.position) < 5)
         {
-            if(collideCooldown <= 0)
+            if (collideCooldown <= 0)
             {
                 collideCooldown = 0.75f;
                 //angle calc
@@ -605,7 +568,8 @@ public class Player : MonoBehaviour
                 float dir = Vector3.Dot(angle, transform.up);
 
                 float force;
-                if(currentspeed > 50 && !item_manager.StarPowerUp){
+                if (currentspeed > 50 && !item_manager.StarPowerUp)
+                {
                     force = 50000;
                 }
                 else
@@ -631,12 +595,12 @@ public class Player : MonoBehaviour
                     if (item_manager.StarPowerUp)
                     {
                         collision.gameObject.GetComponent<Rigidbody>().AddForce(-collision.transform.right * 100000 * Time.deltaTime, ForceMode.Impulse);
-                        collision.gameObject.GetComponent<OpponentItemManager>().hitByShell();
+                        collision.gameObject.GetComponent<OpponentItemManager>().HitByShell();
                     }
                     if (item_manager.isBullet)
                     {
                         collision.gameObject.GetComponent<Rigidbody>().AddForce(-collision.transform.right * 75000 * Time.deltaTime, ForceMode.Impulse);
-                        gameObject.GetComponent<OpponentItemManager>().hitByShell();
+                        gameObject.GetComponent<OpponentItemManager>().HitByShell();
                     }
                     for (int i = 0; i < 30; i++)
                     {
@@ -644,14 +608,12 @@ public class Player : MonoBehaviour
                         rb.AddForce(transform.right * force * Time.deltaTime, ForceMode.Impulse);
                         yield return new WaitForSeconds(0.01f);
                     }
-
-                    
                 }
                 else
                 {
                     if (currentspeed > 50)
                     {
-                        if(!antiGravity)
+                        if (!antiGravity)
                             transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetTrigger("HitLeft");
                         else
                         {
@@ -662,12 +624,12 @@ public class Player : MonoBehaviour
                     if (item_manager.StarPowerUp)
                     {
                         collision.gameObject.GetComponent<Rigidbody>().AddForce(collision.transform.right * 75000 * Time.deltaTime, ForceMode.Impulse);
-                        collision.gameObject.GetComponent<OpponentItemManager>().hitByShell();
+                        collision.gameObject.GetComponent<OpponentItemManager>().HitByShell();
                     }
                     if (item_manager.isBullet)
                     {
                         collision.gameObject.GetComponent<Rigidbody>().AddForce(collision.transform.right * 75000 * Time.deltaTime, ForceMode.Impulse);
-                        collision.gameObject.GetComponent<OpponentItemManager>().hitByShell();
+                        collision.gameObject.GetComponent<OpponentItemManager>().HitByShell();
                     }
                     for (int i = 0; i < 30; i++)
                     {
@@ -675,17 +637,17 @@ public class Player : MonoBehaviour
                         rb.AddForce(-transform.right * force * Time.deltaTime, ForceMode.Impulse);
                         yield return new WaitForSeconds(0.01f);
                     }
-                    
-                    
                 }
                 if (antiGravity)
                 {
                     yield return new WaitForSeconds(0.3f);
-                    if(Boost_time < 1)
+                    if (Boost_time < 1)
+                    {
                         Boost_time = 1.25f;
+                    }
                 }
             }
-            
+
         }
         if (collision.gameObject.tag == "GliderPanel")
         {
@@ -694,9 +656,8 @@ public class Player : MonoBehaviour
                 playersounds.effectSounds[7].Play();
             }
         }
-        if(collision.gameObject.tag == "fence")
+        if (collision.gameObject.tag == "fence")
         {
-            
             if (!item_manager.isBullet)
             {
                 rb.velocity = Vector3.zero;
@@ -716,17 +677,12 @@ public class Player : MonoBehaviour
                     newvel = Vector3.Lerp(newvel, Vector3.zero, 3 * Time.deltaTime);
                     yield return new WaitForSeconds(0.01f);
                 }
-
             }
-            
-
-
-
-
         }
-        if((collision.gameObject.tag == "Cow" || collision.gameObject.tag == "ChainChomp") && Vector3.Distance(transform.position, collision.transform.position) < 6)
+
+        if ((collision.gameObject.tag == "Cow" || collision.gameObject.tag == "ChainChomp") && Vector3.Distance(transform.position, collision.transform.position) < 6)
         {
-            if(collideCooldown <= 0)
+            if (collideCooldown <= 0)
             {
                 collideCooldown = 0.75f;
                 //angle calc
@@ -736,20 +692,20 @@ public class Player : MonoBehaviour
 
                 float force = 50000;
 
-                if(dir < 0)
+                if (dir < 0)
                 {
                     force *= -1;
                 }
 
-                if(REALCURRENTSPEED > 35)
+                if (REALCURRENTSPEED > 35)
                 {
-                    if(!item_manager.StarPowerUp && !item_manager.isBullet)
+                    if (!item_manager.StarPowerUp && !item_manager.isBullet)
                     {
                         if (!RACE_MANAGER.RACE_COMPLETED)
                         {
                             playersounds.effectSounds[19].Play();
                         }
-                        StartCoroutine(hitByBanana());
+                        StartCoroutine(HitByBanana());
                         for (int i = 0; i < 30; i++)
                         {
                             force = Mathf.Lerp(force, 0, 3 * Time.deltaTime);
@@ -757,7 +713,7 @@ public class Player : MonoBehaviour
                             yield return new WaitForSeconds(0.01f);
                         }
                     }
-                    
+
                 }
             }
         }
@@ -783,15 +739,15 @@ public class Player : MonoBehaviour
                 {
                     if (!item_manager.StarPowerUp && !item_manager.isBullet)
                     {
-                        if(item_manager.StarPowerUp || item_manager.isBullet)
+                        if (item_manager.StarPowerUp || item_manager.isBullet)
                         {
-                            StartCoroutine(collision.gameObject.GetComponent<Trolley>().hitByPowerup());
+                            StartCoroutine(collision.gameObject.GetComponent<Trolley>().HitByPowerup());
                         }
                         else
                         {
-                            StartCoroutine(hitByShell());
+                            StartCoroutine(HitByShell());
                         }
-                        if(!item_manager.StarPowerUp || item_manager.isBullet)
+                        if (!item_manager.StarPowerUp || item_manager.isBullet)
                         {
                             for (int i = 0; i < 30; i++)
                             {
@@ -800,7 +756,7 @@ public class Player : MonoBehaviour
                                 yield return new WaitForSeconds(0.01f);
                             }
                         }
-                        
+
                     }
 
                 }
@@ -808,14 +764,14 @@ public class Player : MonoBehaviour
 
         }
 
-        if(collision.gameObject.tag == "Crate")
+        if (collision.gameObject.tag == "Crate")
         {
-            if(currentspeed > 5 && Boost_time <= 0) { currentspeed = 5;}
+            if (currentspeed > 5 && Boost_time <= 0) { currentspeed = 5; }
 
-            StartCoroutine(collision.gameObject.GetComponent<Crates>().destroy());
+            StartCoroutine(collision.gameObject.GetComponent<Crates>().Destroy());
         }
 
-        if(collision.gameObject.tag == "Submarine")
+        if (collision.gameObject.tag == "Submarine")
         {
 
             if (collideCooldown <= 0)
@@ -853,12 +809,12 @@ public class Player : MonoBehaviour
                     if (item_manager.StarPowerUp)
                     {
                         collision.gameObject.GetComponent<Rigidbody>().AddForce(-collision.transform.right * 100000 * Time.deltaTime, ForceMode.Impulse);
-                        collision.gameObject.GetComponent<OpponentItemManager>().hitByShell();
+                        collision.gameObject.GetComponent<OpponentItemManager>().HitByShell();
                     }
                     if (item_manager.isBullet)
                     {
                         collision.gameObject.GetComponent<Rigidbody>().AddForce(-collision.transform.right * 75000 * Time.deltaTime, ForceMode.Impulse);
-                        gameObject.GetComponent<OpponentItemManager>().hitByShell();
+                        gameObject.GetComponent<OpponentItemManager>().HitByShell();
                     }
                     for (int i = 0; i < 30; i++)
                     {
@@ -866,8 +822,6 @@ public class Player : MonoBehaviour
                         rb.AddForce(transform.right * force * Time.deltaTime, ForceMode.Impulse);
                         yield return new WaitForSeconds(0.01f);
                     }
-
-
                 }
                 else
                 {
@@ -884,12 +838,12 @@ public class Player : MonoBehaviour
                     if (item_manager.StarPowerUp)
                     {
                         collision.gameObject.GetComponent<Rigidbody>().AddForce(collision.transform.right * 75000 * Time.deltaTime, ForceMode.Impulse);
-                        collision.gameObject.GetComponent<OpponentItemManager>().hitByShell();
+                        collision.gameObject.GetComponent<OpponentItemManager>().HitByShell();
                     }
                     if (item_manager.isBullet)
                     {
                         collision.gameObject.GetComponent<Rigidbody>().AddForce(collision.transform.right * 75000 * Time.deltaTime, ForceMode.Impulse);
-                        collision.gameObject.GetComponent<OpponentItemManager>().hitByShell();
+                        collision.gameObject.GetComponent<OpponentItemManager>().HitByShell();
                     }
                     for (int i = 0; i < 30; i++)
                     {
@@ -897,19 +851,17 @@ public class Player : MonoBehaviour
                         rb.AddForce(-transform.right * force * Time.deltaTime, ForceMode.Impulse);
                         yield return new WaitForSeconds(0.01f);
                     }
-
-
                 }
                 if (antiGravity)
                 {
                     yield return new WaitForSeconds(0.3f);
                     if (Boost_time < 1)
+                    {
                         Boost_time = 1.25f;
+                    }
                 }
             }
         }
-
-        
     }
     IEnumerator OnTriggerEnter(Collider other)
     {
@@ -918,16 +870,14 @@ public class Player : MonoBehaviour
         {
             item_manager.PlaySelectsound.Play();
             hasitem = true; //will trigger a method in the item manager script
-            for(int i = 0; i < 5; i++)
+            for (int i = 0; i < 5; i++)
             {
-
                 other.transform.GetChild(0).GetChild(i).GetComponent<ParticleSystem>().Play();
-
             }
 
             //start hiding stuff
             other.gameObject.GetComponent<BoxCollider>().enabled = false;
-            for(int i = 1; i < 3; i++)
+            for (int i = 1; i < 3; i++)
             {
                 other.transform.GetChild(2).GetChild(i).GetComponent<SkinnedMeshRenderer>().enabled = false; //box
                 other.transform.GetChild(1).GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false; //question mark
@@ -943,12 +893,10 @@ public class Player : MonoBehaviour
             }
             other.gameObject.GetComponent<Animator>().SetBool("Enlarge", true);  //show the item box spawning with animation, even though it was already there
             other.gameObject.GetComponent<BoxCollider>().enabled = true;
-
-
         }
-        if((other.gameObject.tag == "Explosion" || other.gameObject.tag == "ChainChomp") && !item_manager.isBullet && !item_manager.StarPowerUp)
+        if ((other.gameObject.tag == "Explosion" || other.gameObject.tag == "ChainChomp") && !item_manager.isBullet && !item_manager.StarPowerUp)
         {
-            StartCoroutine(hitByBanana());
+            StartCoroutine(HitByBanana());
             currentspeed = 0;
         }
         if (other.gameObject.tag == "JumpPanel" && !JUMP_PANEL && !item_manager.isBullet)
@@ -956,7 +904,7 @@ public class Player : MonoBehaviour
             jumpPanelUpForce = other.gameObject.GetComponent<JumpPanelScript>().upforce;
             jumpPanelDownForce = other.gameObject.GetComponent<JumpPanelScript>().downforce;
             JUMP_PANEL = true;
-            
+
             Boost_time = 2;
             Boost = true;
             playersounds.effectSounds[8].Play();
@@ -967,24 +915,19 @@ public class Player : MonoBehaviour
                 BoostBurstPS.transform.GetChild(i).GetComponent<ParticleSystem>().Play(); //left and right included
             } //burst boost
 
-
-
-            if (playersounds.Check_if_playing())
+            if (playersounds.CheckIfSoundPlaying())
             {
                 playersounds.Mario_Boost_Sounds[playersounds.sound_count].Play();
                 playersounds.sound_count++;
             }
-
-
-
         }
 
-        if(other.gameObject.tag == "CancelDownForce")
+        if (other.gameObject.tag == "CancelDownForce")
         {
             cancelAddforceDown = true;
         }
 
-        if(other.gameObject.tag == "Coin")
+        if (other.gameObject.tag == "Coin")
         {
             other.GetComponent<SphereCollider>().enabled = false;
             other.transform.GetChild(0).GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = false;
@@ -998,8 +941,6 @@ public class Player : MonoBehaviour
             other.GetComponent<SphereCollider>().enabled = true;
             other.transform.GetChild(0).GetChild(1).GetComponent<SkinnedMeshRenderer>().enabled = true;
             other.gameObject.GetComponent<Animator>().SetBool("Spawn", true); //reset to start process
-
-
         }
 
         //next waypoint
@@ -1010,19 +951,17 @@ public class Player : MonoBehaviour
                 currentWayPoint = 0;
             }
             else
+            {
                 currentWayPoint++;
-
-
+            }
         }
 
-
-        if(other.gameObject.tag == "Cow" && (item_manager.StarPowerUp || item_manager.isBullet))
+        if (other.gameObject.tag == "Cow" && (item_manager.StarPowerUp || item_manager.isBullet))
         {
- 
-                StartCoroutine(other.gameObject.GetComponent<Cow>().hitByPowerup());
-            
+
+            StartCoroutine(other.gameObject.GetComponent<Cow>().HitByPowerup());
+
         }
-       
 
         //trick collider
         if (other.gameObject.tag == "TrickCollider")
@@ -1033,7 +972,7 @@ public class Player : MonoBehaviour
 
         if (other.gameObject.tag == "AntiGravity")
         {
-            StartCoroutine(antiGravityColor());
+            StartCoroutine(AntiGravityColor());
 
             if (other.GetComponent<CameraRotateAntigravity>().rotateCam)
             {
@@ -1046,10 +985,10 @@ public class Player : MonoBehaviour
         }
         if (other.gameObject.tag == "AntiGravityFalse")
         {
-                StartCoroutine(exitAntiGravity());
+            StartCoroutine(ExitAntiGravity());
 
-            if(other.gameObject.GetComponent<AntiGravityExitRotate>().rotateX || other.gameObject.GetComponent<AntiGravityExitRotate>().rotateY || other.gameObject.GetComponent<AntiGravityExitRotate>().rotateZ)
-               Cam.antiGravityTimeAgo = 0;
+            if (other.gameObject.GetComponent<AntiGravityExitRotate>().rotateX || other.gameObject.GetComponent<AntiGravityExitRotate>().rotateY || other.gameObject.GetComponent<AntiGravityExitRotate>().rotateZ)
+                Cam.antiGravityTimeAgo = 0;
 
             Cam.rotateAmountAntigravityX = 2;
             Cam.rotateAmountAntigravityZ = 0;
@@ -1072,7 +1011,7 @@ public class Player : MonoBehaviour
     {
         if (other.gameObject.tag == "GliderPanel")
         {
-            if(gameObject.tag == "Player")
+            if (gameObject.tag == "Player")
             {
                 Boost_time = 2;
                 Boost = true;
@@ -1084,9 +1023,7 @@ public class Player : MonoBehaviour
                     BoostBurstPS.transform.GetChild(i).GetComponent<ParticleSystem>().Play(); //left and right included
                 } //burst boost
 
-
-
-                if (playersounds.Check_if_playing())
+                if (playersounds.CheckIfSoundPlaying())
                 {
                     playersounds.Mario_Boost_Sounds[playersounds.sound_count].Play();
                     playersounds.sound_count++;
@@ -1103,14 +1040,12 @@ public class Player : MonoBehaviour
                     }
                 }
             }
-     
-
         }
-        if(other.gameObject.tag == "GliderPanelFly")
+        if (other.gameObject.tag == "GliderPanelFly")
         {
             glideAngleZ = other.GetComponent<GetGlideAngle>().glideAngle;
             glideAngleX = other.GetComponent<GetGlideAngle>().glideAngleX;
-            
+
             Cam.glideAngleZ = other.GetComponent<GetGlideAngle>().glideAngle;
             Cam.glideAngleX = other.GetComponent<GetGlideAngle>().glideAngleX;
 
@@ -1124,15 +1059,12 @@ public class Player : MonoBehaviour
 
                     GLIDER_FLY = true;
                     glider_close_confirm = false;
-                     playersounds.effectSounds[2].Play();
+                    playersounds.effectSounds[2].Play();
                 }
-
-
 
                 drift_direction = 0;
                 drift_left = false;
                 drift_right = false;
-
 
                 //reset everything
                 Drift_time = 0;
@@ -1190,7 +1122,7 @@ public class Player : MonoBehaviour
 
 
                     //sounds
-                    if (playersounds.Check_if_playing() && !playersounds.Mario_Glider.isPlaying && !RACE_MANAGER.RACE_COMPLETED)
+                    if (playersounds.CheckIfSoundPlaying() && !playersounds.Mario_Glider.isPlaying && !RACE_MANAGER.RACE_COMPLETED)
                     {
                         playersounds.Mario_Glider.Play();
                     }
@@ -1231,7 +1163,7 @@ public class Player : MonoBehaviour
     {
         if (other.gameObject.tag == "ColliderInAir")
         {
-            if((!RACE_MANAGER.RACE_COMPLETED) || (RACE_MANAGER.RACE_COMPLETED && other.gameObject.GetComponent<colliderInAir>().isForRaceEnd))
+            if ((!RACE_MANAGER.RACE_COMPLETED) || (RACE_MANAGER.RACE_COMPLETED && other.gameObject.GetComponent<colliderInAir>().isForRaceEnd))
             {
                 if (GLIDER_FLY && !other.GetComponent<colliderInAir>().isONLYforRaceEnd)
                 {
@@ -1266,11 +1198,8 @@ public class Player : MonoBehaviour
                     }
                 }
             }
-            
-            
-
         }
-        if(other.gameObject.tag == "CancelDownForce")
+        if (other.gameObject.tag == "CancelDownForce")
         {
             Vector3 oldvel = rb.velocity;
             oldvel.y *= 0.98f;
@@ -1285,7 +1214,8 @@ public class Player : MonoBehaviour
         {
             antiGravity = false;
 
-            if (other.gameObject.GetComponent<AntiGravityExitRotate>().rotateX){
+            if (other.gameObject.GetComponent<AntiGravityExitRotate>().rotateX)
+            {
                 transform.rotation = Quaternion.SlerpUnclamped(transform.rotation, Quaternion.Euler(other.gameObject.GetComponent<AntiGravityExitRotate>().newRotation.x, transform.eulerAngles.y, transform.eulerAngles.z), 1 * Time.deltaTime);
             }
             if (other.gameObject.GetComponent<AntiGravityExitRotate>().rotateZ)
@@ -1298,7 +1228,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        if(other.gameObject.name == "DEPTHWATER")
+        if (other.gameObject.name == "DEPTHWATER")
         {
             IN_WATER = true;
 
@@ -1309,7 +1239,7 @@ public class Player : MonoBehaviour
                 vel.y *= 0.91f;
                 rb.velocity = transform.TransformDirection(vel);
             }
-            
+
         }
 
     }
@@ -1319,9 +1249,9 @@ public class Player : MonoBehaviour
         REALCURRENTSPEED = transform.InverseTransformDirection(rb.velocity).z;
 
         collideCooldown -= Time.deltaTime;
-        if(!GLIDER_FLY && !JUMP_PANEL && !cancelAddforceDown)
+        if (!GLIDER_FLY && !JUMP_PANEL && !cancelAddforceDown)
         {
-            if(antiGravity)
+            if (antiGravity)
                 rb.AddRelativeForce(Vector3.down * 5000 * Time.deltaTime, ForceMode.Acceleration);
             else
             {
@@ -1330,9 +1260,9 @@ public class Player : MonoBehaviour
         }
         //input speed into velocity
         Vector3 velocity = transform.forward * currentspeed;
-        if(velocity.y > rb.velocity.y )
+        if (velocity.y > rb.velocity.y)
         {
-            if(!antiGravity)
+            if (!antiGravity)
                 velocity.y = rb.velocity.y;
 
         }
@@ -1343,7 +1273,7 @@ public class Player : MonoBehaviour
             rb.AddRelativeForce(Physics.gravity * 5, ForceMode.Acceleration);
         }
 
-        if(GLIDER_FLY)
+        if (GLIDER_FLY)
         {
             Vector3 newVel = rb.velocity;
             if (!Input.GetKey(KeyCode.DownArrow))
@@ -1372,7 +1302,7 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.Space))
         {
             currentspeed = Mathf.Lerp(currentspeed, max_speed, 0.5f * Time.deltaTime);
-            if(!drift_right && !drift_left && (!item_manager.StarPowerUp || drift_left || drift_right))
+            if (!drift_right && !drift_left && (!item_manager.StarPowerUp || drift_left || drift_right))
                 rotate_strength = desired_rotate_strength;
             if (item_manager.StarPowerUp && !drift_right && !drift_left)
             {
@@ -1383,11 +1313,11 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.S) && !GLIDER_FLY)
         {
             currentspeed = Mathf.Lerp(currentspeed, -max_speed / 1.6f, 0.03f);
-            if(REALCURRENTSPEED <= 0)
+            if (REALCURRENTSPEED <= 0)
             {
                 rotate_strength = 120;
             }
-            
+
         }
         //slowdown by itself
         if (!Input.GetKey(KeyCode.Space))
@@ -1434,7 +1364,7 @@ public class Player : MonoBehaviour
         //glider movements
         if (GLIDER_FLY)
         {
-            gliderMovements();
+            GliderMovements();
         }
         if (JUMP_PANEL)
         {
@@ -1448,9 +1378,9 @@ public class Player : MonoBehaviour
         }
 
 
-        if((Input.GetKey(KeyCode.Space) && REALCURRENTSPEED < 0) || (currentspeed > 40 && REALCURRENTSPEED <= 5 && Input.GetKey(KeyCode.Space)))//skid effect
+        if ((Input.GetKey(KeyCode.Space) && REALCURRENTSPEED < 0) || (currentspeed > 40 && REALCURRENTSPEED <= 5 && Input.GetKey(KeyCode.Space)))//skid effect
         {
-            reverseSkid = true;    
+            reverseSkid = true;
         }
 
         if (reverseSkid && REALCURRENTSPEED < 20 && Input.GetKey(KeyCode.Space) && !IN_WATER)
@@ -1461,7 +1391,7 @@ public class Player : MonoBehaviour
             {
                 playersounds.effectSounds[20].Play();
             }
-            if(GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().FrontCam.activeSelf)
+            if (GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().FrontCam.activeSelf)
                 GameObject.Find("Main Camera").GetComponent<Animator>().SetBool("Vibrate", true);
         }
         else
@@ -1470,27 +1400,28 @@ public class Player : MonoBehaviour
             AccelBeforeStartDust.GetChild(0).GetComponent<ParticleSystem>().Stop();
             AccelBeforeStartDust.GetChild(1).GetComponent<ParticleSystem>().Stop();
             playersounds.effectSounds[20].Stop();
-            if(!Input.GetKey(KeyCode.B) && GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().FrontCam.activeSelf)
+            if (!Input.GetKey(KeyCode.B) && GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>().FrontCam.activeSelf)
                 GameObject.Find("Main Camera").GetComponent<Animator>().SetBool("Vibrate", false);
 
         }
 
         //reverse face and animation
-        if(Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.Space) && REALCURRENTSPEED < 0 && !SpecialFace)
+        if (Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.Space) && REALCURRENTSPEED < 0 && !SpecialFace)
         {
             reversing = true;
             Driver.SetBool("Reverse", true);
             reversingTime += Time.deltaTime;
         }
-        else if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyDown(KeyCode.Space)){
+        else if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyDown(KeyCode.Space))
+        {
             current_face_material = faces[0];
             Driver.SetBool("Reverse", false);
             reversing = false;
             reversingTime = 0;
         }
-        if(reversing && !SpecialFace)
+        if (reversing && !SpecialFace)
         {
-            if(reversingTime % 2 > 1.9)
+            if (reversingTime % 2 > 1.9)
             {
                 current_face_material = faces[2];
             }
@@ -1500,7 +1431,7 @@ public class Player : MonoBehaviour
             }
         }
 
- 
+
 
         if (HitByBanana_)
         {
@@ -1523,7 +1454,8 @@ public class Player : MonoBehaviour
             currentspeed = Mathf.Lerp(currentspeed, 0, 4.5f * Time.deltaTime);
         }
 
-        if(transform.GetChild(0).GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(2).IsName("SpinLeft") || transform.GetChild(0).GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(2).IsName("SpinRight") && particleSystemAntigravSpinTimer < 0.95f){
+        if (transform.GetChild(0).GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(2).IsName("SpinLeft") || transform.GetChild(0).GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(2).IsName("SpinRight") && particleSystemAntigravSpinTimer < 0.95f)
+        {
             particleSystemAntigravSpinTimer += Time.deltaTime; //this timer thing is limited to 0.95 seconds because when the animation returns to original state, the trail gets weird
             if (!antiGravSpin[0].isPlaying && antiGravSpin.Length > 0)
             {
@@ -1533,14 +1465,14 @@ public class Player : MonoBehaviour
         }
         else
         {
-            if(antiGravSpin.Length > 0)
+            if (antiGravSpin.Length > 0)
             {
                 antiGravSpin[0].Stop();
                 antiGravSpin[1].Stop();
             }
 
         }
-        if(particleSystemAntigravSpinTimer > 1.01f)
+        if (particleSystemAntigravSpinTimer > 1.01f)
         {
             particleSystemAntigravSpinTimer = 0;
         }
@@ -1552,7 +1484,7 @@ public class Player : MonoBehaviour
         //steer
         if (Input.GetAxis("Horizontal") != 0)
         {
-            
+
 
             //turning mechanism if drifting
             if (drift_right && !drift_left)
@@ -1566,7 +1498,7 @@ public class Player : MonoBehaviour
                 {
                     rb.AddForce(-transform.right * force * Time.deltaTime, ForceMode.Acceleration);
                 }
-                if(IN_WATER && !antiGravity)
+                if (IN_WATER && !antiGravity)
                 {
                     transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetBool("UnderWaterDriftRight", true);
                     transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetBool("UnderWaterDriftLeft", false);
@@ -1592,7 +1524,7 @@ public class Player : MonoBehaviour
             }
 
 
-            
+
             //how strong the player can turn
             float speed_rotate_rate = 0;
             if (drift_left || drift_right)
@@ -1601,7 +1533,7 @@ public class Player : MonoBehaviour
             if (REALCURRENTSPEED > 10 && REALCURRENTSPEED < 40 && !drift_right && !drift_left)
                 speed_rotate_rate = 1.3f;
 
-            if(REALCURRENTSPEED < 10 && REALCURRENTSPEED > 3 && !drift_right && !drift_left)
+            if (REALCURRENTSPEED < 10 && REALCURRENTSPEED > 3 && !drift_right && !drift_left)
             {
                 speed_rotate_rate = 0.5f;
             }
@@ -1616,7 +1548,7 @@ public class Player : MonoBehaviour
             //final rotations
             //transform.localEulerAngles = Vector3.Lerp(transform.localEulerAngles, new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y + rotate_strength * direction * speed_rotate_rate, transform.localEulerAngles.z), 1f * Time.deltaTime); //which direction to rotate kart 
 
-            if(Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow))
+            if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow))
                 transform.Rotate(new Vector3(0, rotate_strength * direction * speed_rotate_rate * 0.025f, 0), Space.Self); //changed to suit anti-gravity contitions from the euler angle method
         }
 
@@ -1627,8 +1559,8 @@ public class Player : MonoBehaviour
             max_speed = desiredMaxSpeed;
 
 
-                transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetBool("UnderWaterDriftRight", false);
-                transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetBool("UnderWaterDriftLeft", false);
+            transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetBool("UnderWaterDriftRight", false);
+            transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetBool("UnderWaterDriftLeft", false);
         }
         if (!IN_WATER || antiGravity)
         {
@@ -1643,10 +1575,10 @@ public class Player : MonoBehaviour
         RaycastHit hit;
 
         bool onGround = Physics.Raycast(ground, out hit, 1, mask) && (hit.normal.y > 0.5f || antiGravity);
-        
+
 
         //drift hop
-        if (Input.GetKeyDown(KeyCode.V) && ! GLIDER_FLY && ! JUMP_PANEL && onGround)
+        if (Input.GetKeyDown(KeyCode.V) && !GLIDER_FLY && !JUMP_PANEL && onGround)
         {
             transform.GetChild(0).gameObject.GetComponent<Animator>().SetTrigger("Drift");
 
@@ -1669,7 +1601,7 @@ public class Player : MonoBehaviour
         }
 
         //while v is pressed, you are drifting
-        if (Input.GetKey(KeyCode.V) && grounded && currentspeed > 40 && Input.GetAxis("Horizontal") != 0 && ! GLIDER_FLY && !JUMP_PANEL && !HitByBanana_ && !HitByShell_)
+        if (Input.GetKey(KeyCode.V) && grounded && currentspeed > 40 && Input.GetAxis("Horizontal") != 0 && !GLIDER_FLY && !JUMP_PANEL && !HitByBanana_ && !HitByShell_)
         {
             rotate_strength = Mathf.Lerp(rotate_strength, desired_rotate_strength, 3 * Time.deltaTime);
             Drift_time += Time.deltaTime;
@@ -1707,7 +1639,7 @@ public class Player : MonoBehaviour
             }
 
             //drift dust particles
-            if(Drift_time < 1f && drifting && !IN_WATER) //drifting bool starts from animator when player hop touches ground
+            if (Drift_time < 1f && drifting && !IN_WATER) //drifting bool starts from animator when player hop touches ground
             {
                 if (drift_left)
                 {
@@ -1796,7 +1728,7 @@ public class Player : MonoBehaviour
 
 
         }
-        else if(currentspeed < 40)
+        else if (currentspeed < 40)
         {
             drift_left = false;
             drift_right = false;
@@ -1825,12 +1757,12 @@ public class Player : MonoBehaviour
             {
                 Boost = true;
                 Boost_time = 0.75f;
-                if (playersounds.Check_if_playing())
+                if (playersounds.CheckIfSoundPlaying())
                 {
                     playersounds.Mario_Boost_Sounds[playersounds.sound_count].Play();
                     playersounds.sound_count++;
                 }
-                for(int i = 0; i < BoostBurstPS.transform.childCount; i++)
+                for (int i = 0; i < BoostBurstPS.transform.childCount; i++)
                 {
                     BoostBurstPS.transform.GetChild(i).GetComponent<ParticleSystem>().Play(); //left and right included
                 }
@@ -1840,7 +1772,7 @@ public class Player : MonoBehaviour
             {
                 Boost = true;
                 Boost_time = 1.5f;
-                if (playersounds.Check_if_playing())
+                if (playersounds.CheckIfSoundPlaying())
                 {
                     playersounds.Mario_Boost_Sounds[playersounds.sound_count].Play();
                     playersounds.sound_count++;
@@ -1854,7 +1786,7 @@ public class Player : MonoBehaviour
             {
                 Boost = true;
                 Boost_time = 2.5f;
-                if (playersounds.Check_if_playing())
+                if (playersounds.CheckIfSoundPlaying())
                 {
                     playersounds.Mario_Boost_Sounds[playersounds.sound_count].Play();
                     playersounds.sound_count++;
@@ -1864,8 +1796,6 @@ public class Player : MonoBehaviour
                     BoostBurstPS.transform.GetChild(i).GetComponent<ParticleSystem>().Play(); //left and right included
                 }
             }
-
-
 
             //reset everything
             Drift_time = 0;
@@ -1888,7 +1818,7 @@ public class Player : MonoBehaviour
             DriftDustRight.GetChild(1).GetComponent<ParticleSystem>().Stop();
         }
     }
-    void player_animations()
+    void PlayerAnimations()
     {
         if (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
         {
@@ -1900,14 +1830,14 @@ public class Player : MonoBehaviour
             Driver.SetBool("TurnLeft", false);
             Driver.SetBool("TurnRight", true);
         }
-        if(Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.LeftArrow))
         {
             Driver.SetBool("TurnLeft", true);
             Driver.SetBool("TurnRight", false);
         }
-        
+
     }
-    void boostEffects()
+    void BoostEffects()
     {
         //boost particle systems
         if (Boost)
@@ -1929,7 +1859,7 @@ public class Player : MonoBehaviour
             }
         }
     }
-    void movingCarParts()
+    void MovingCarParts()
     {
         if (!antiGravity)
         {
@@ -1942,8 +1872,6 @@ public class Player : MonoBehaviour
                 FrontLeftTire.transform.localEulerAngles = Vector3.LerpUnclamped(FrontLeftTire.transform.localEulerAngles, new Vector3(0, 205, 0), rotate_speed * Time.deltaTime);
 
                 steeringwheel.transform.localEulerAngles = Vector3.Lerp(steeringwheel.transform.localEulerAngles, new Vector3(0, 205, 0), rotate_speed * Time.deltaTime);
-
-
             } //right
             if (x <= -0.1)
             {
@@ -1951,9 +1879,6 @@ public class Player : MonoBehaviour
                 FrontLeftTire.transform.localEulerAngles = Vector3.LerpUnclamped(FrontLeftTire.transform.localEulerAngles, new Vector3(0, 155, 0), rotate_speed * Time.deltaTime);
 
                 steeringwheel.transform.localEulerAngles = Vector3.Lerp(steeringwheel.transform.localEulerAngles, new Vector3(0, 155, 0), rotate_speed * Time.deltaTime);
-
-
-
             } //left
             if (x == 0)
             {
@@ -1961,7 +1886,6 @@ public class Player : MonoBehaviour
                 FrontLeftTire.transform.localEulerAngles = Vector3.Lerp(FrontLeftTire.transform.localEulerAngles, new Vector3(0, 180, 0), rotate_speed * Time.deltaTime);
 
                 steeringwheel.transform.localEulerAngles = Vector3.Lerp(steeringwheel.transform.localEulerAngles, new Vector3(0, 180, 0), rotate_speed * Time.deltaTime);
-
             } //0
         }
         else
@@ -1969,8 +1893,8 @@ public class Player : MonoBehaviour
             FrontRightTire.transform.localEulerAngles = Vector3.Lerp(FrontRightTire.transform.localEulerAngles, new Vector3(0, 180, 0), 10 * Time.deltaTime);
             FrontLeftTire.transform.localEulerAngles = Vector3.Lerp(FrontLeftTire.transform.localEulerAngles, new Vector3(0, 180, 0), 10 * Time.deltaTime);
         }
-        
-          //tire spinning
+
+        //tire spinning
         for (int i = 0; i < 4; i++)
         {
             if (Input.GetKey(KeyCode.Space) && REALCURRENTSPEED < 0)
@@ -1992,18 +1916,15 @@ public class Player : MonoBehaviour
                     tires[i].transform.Rotate(-90 * Time.deltaTime * currentspeed / 4f, 0, 0);
                 }
             }
-
-            
         }
 
         //propeller
-        
-        if(propeller != null)
+        if (propeller != null)
         {
             if (IN_WATER)
             {
                 propeller.gameObject.SetActive(true);
-                float speed = REALCURRENTSPEED+3;
+                float speed = REALCURRENTSPEED + 3;
                 speed = Mathf.Clamp(speed, 0, 40);
                 propeller.Rotate(0, 0, speed, Space.Self);
             }
@@ -2012,10 +1933,6 @@ public class Player : MonoBehaviour
                 propeller.gameObject.SetActive(false);
             }
         }
-
-
-
-
     }
     void GroundNormalRotation()
     {
@@ -2030,15 +1947,13 @@ public class Player : MonoBehaviour
 
                 if (Physics.Raycast(ground, out hit, groundRayDist, mask) && (hit.normal.y > 0.5f || antiGravity))
                 {
-                    if(antiGravity)
+                    if (antiGravity)
                         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.up * 2, hit.normal) * transform.rotation, 1f * Time.deltaTime);
                     else
                     {
                         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.up * 2, hit.normal) * transform.rotation, 7.5f * Time.deltaTime);
                     }
                 }
-
-
             }
             if (glidingTime > 3f)
             {
@@ -2063,8 +1978,6 @@ public class Player : MonoBehaviour
                 {
                     transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.up * 2, hit.normal) * transform.rotation, 7.5f * Time.deltaTime);
                 }
-
-
             }
             if (glidingTime > 3f)
             {
@@ -2077,11 +1990,9 @@ public class Player : MonoBehaviour
                 }
             }
         }
-        
-      
-
     }
-    void gliderMovements()
+
+    void GliderMovements()
     {
         glidingTime += Time.deltaTime;
 
@@ -2106,89 +2017,83 @@ public class Player : MonoBehaviour
             glider.GetComponent<Animator>().SetBool("GliderClose", false);
         }
 
-
         Transform kart = transform;
 
         //turn left and right, up and down
-        
+
+        if (Input.GetKey(KeyCode.UpArrow) && !RACE_MANAGER.RACE_COMPLETED)
         {
-            if (Input.GetKey(KeyCode.UpArrow) && !RACE_MANAGER.RACE_COMPLETED)
-            {
-                kart.rotation = Quaternion.SlerpUnclamped(kart.rotation, Quaternion.Euler(25 + glideAngleX, kart.eulerAngles.y, kart.eulerAngles.z), 1.5f * Time.deltaTime);
-                rb.AddForce(Vector3.down * 2000 * Time.deltaTime, ForceMode.Acceleration);
-            }
-            else if (Input.GetKey(KeyCode.DownArrow) && !RACE_MANAGER.RACE_COMPLETED)
-            {
-                float angle = transform.localEulerAngles.x;
-                angle = (angle > 180) ? angle - 360 : angle;
-
-                if (angle > -20 + glideAngleX)
-                {
-                    kart.rotation = Quaternion.SlerpUnclamped(kart.rotation, Quaternion.Euler(-25 + glideAngleX, kart.eulerAngles.y, kart.eulerAngles.z), 1.5f * Time.deltaTime);
-                }
-                if (glidingTime < 6)
-                    rb.AddRelativeForce(Vector3.up * Time.deltaTime * 1500, ForceMode.Acceleration);
-            }
-            else
-            {
-                kart.rotation = Quaternion.SlerpUnclamped(kart.rotation, Quaternion.Euler(0 + glideAngleX, kart.eulerAngles.y, kart.eulerAngles.z), 1.5f * Time.deltaTime);
-            }
+            kart.rotation = Quaternion.SlerpUnclamped(kart.rotation, Quaternion.Euler(25 + glideAngleX, kart.eulerAngles.y, kart.eulerAngles.z), 1.5f * Time.deltaTime);
+            rb.AddForce(Vector3.down * 2000 * Time.deltaTime, ForceMode.Acceleration);
         }
-       
+        else if (Input.GetKey(KeyCode.DownArrow) && !RACE_MANAGER.RACE_COMPLETED)
         {
-            //ground normal rotation
-            Ray ground = new Ray(transform.position, -transform.up);
-            RaycastHit hit;
-            if (!Physics.Raycast(ground, out hit, 0, mask))
+            float angle = transform.localEulerAngles.x;
+            angle = (angle > 180) ? angle - 360 : angle;
+
+            if (angle > -20 + glideAngleX)
             {
-                rotate_strength = 15;
-
-                Quaternion zeroRot = Quaternion.identity;
-
-
-
-                Quaternion targetRot = Quaternion.Euler(kart.eulerAngles.x, kart.eulerAngles.y, glideAngleZ + 40 * inputHorizontalSmooth);
-                kart.rotation = Quaternion.SlerpUnclamped(kart.rotation, targetRot, 3 * Time.deltaTime);
+                kart.rotation = Quaternion.SlerpUnclamped(kart.rotation, Quaternion.Euler(-25 + glideAngleX, kart.eulerAngles.y, kart.eulerAngles.z), 1.5f * Time.deltaTime);
             }
-            else
-                rotate_strength = 25;
+            if (glidingTime < 6)
+                rb.AddRelativeForce(Vector3.up * Time.deltaTime * 1500, ForceMode.Acceleration);
         }
-        
+        else
+        {
+            kart.rotation = Quaternion.SlerpUnclamped(kart.rotation, Quaternion.Euler(0 + glideAngleX, kart.eulerAngles.y, kart.eulerAngles.z), 1.5f * Time.deltaTime);
+        }
 
+        //ground normal rotation
+        Ray ground = new Ray(transform.position, -transform.up);
+        RaycastHit hit;
+        if (!Physics.Raycast(ground, out hit, 0, mask))
+        {
+            rotate_strength = 15;
+
+            Quaternion zeroRot = Quaternion.identity;
+
+            Quaternion targetRot = Quaternion.Euler(kart.eulerAngles.x, kart.eulerAngles.y, glideAngleZ + 40 * inputHorizontalSmooth);
+            kart.rotation = Quaternion.SlerpUnclamped(kart.rotation, targetRot, 3 * Time.deltaTime);
+        }
+        else
+        {
+            rotate_strength = 25;
+        }
     }
-
 
     void PositionUI()
     {
-        if(!showUI && lapCounter.totalCheckpointVal > 1)
+        if (!showUI && lapCounter.totalCheckpointVal > 1)
         {
             positionUI.GetComponent<Animator>().SetTrigger("Change");
             showUI = true;
         }
-        if(lastPos != lapCounter.Position && lapCounter.totalCheckpointVal > 1)
+        if (lastPos != lapCounter.Position && lapCounter.totalCheckpointVal > 1)
         {
             lastPos = lapCounter.Position;
             positionUI.GetComponent<Animator>().SetTrigger("Change");
         }
     }
-    
-    void mario_face()
+
+    void ShaderUpdate()
     {
-        if(!item_manager.StarPowerUp)
+        if (!item_manager.StarPowerUp)
+        {
             MarioFace.sharedMaterial = current_face_material;
+        }
         else
         {
             MarioFace.sharedMaterial = item_manager.starMat;
         }
     }
 
-    public IEnumerator hitByBanana()
+    public IEnumerator HitByBanana()
     {
         GetComponent<Minimap>().playerInMap.GetComponent<Animator>().SetTrigger("Spin");
         playersounds.playHurtSound();
         HitByBanana_ = true;
         Boost_time = 0;
-        stopDrift();
+        StopDrift();
 
         if (!RACE_MANAGER.RACE_COMPLETED)
         {
@@ -2198,7 +2103,6 @@ public class Player : MonoBehaviour
         }
 
         yield return new WaitForSeconds(1.5f);
-
 
         HitByBanana_ = false;
         playSpinAnim = true;
@@ -2211,14 +2115,15 @@ public class Player : MonoBehaviour
             Driver.SetBool("Hurt", false);
         }
     }
-    public IEnumerator hitByShell()
+
+    public IEnumerator HitByShell()
     {
 
         GetComponent<Minimap>().playerInMap.GetComponent<Animator>().SetTrigger("Spin");
         playersounds.playHurtSound();
         HitByShell_ = true;
         Boost_time = 0;
-        stopDrift();
+        StopDrift();
         if (!RACE_MANAGER.RACE_COMPLETED)
         {
             current_face_material = faces[4];
@@ -2238,28 +2143,23 @@ public class Player : MonoBehaviour
             Driver.SetBool("Hurt", false);
             SpecialFace = false;
         }
-
     }
 
-    public void kartAnims()
+    public void KartAnims()
     {
-        
-
         //to prevent going in the air when drifting
-        if((drift_left || drift_right) && !GLIDER_FLY)
+        if ((drift_left || drift_right) && !GLIDER_FLY)
         {
             rb.AddForce(-transform.up * 10000 * Time.deltaTime, ForceMode.Acceleration);
         }
-
     }
 
-    void steerOnPath()
+    void SteerOnPath()
     {
         Vector3 lookat = RaceEndPath.GetChild(currentWayPoint).position;
 
         Ray ground = new Ray(transform.position, -transform.up);
         RaycastHit hit;
-        
 
         if (Physics.Raycast(ground, out hit, 10, mask))//different mask
         {
@@ -2281,21 +2181,22 @@ public class Player : MonoBehaviour
         transform.Rotate(0, y / 16, 0, Space.Self);
 
     }
-    void moveOnPath()
+
+    void MoveOnPath()
     {
         currentspeed = Mathf.Lerp(currentspeed, desiredMaxSpeed, 1.5f * Time.deltaTime);
         Vector3 vel = transform.forward * currentspeed;
 
-        if(!antiGravity)
+        if (!antiGravity)
             vel.y = rb.velocity.y;
 
         rb.velocity = vel;
 
-            rb.AddRelativeForce(Vector3.down * 5000 * Time.deltaTime, ForceMode.Acceleration);
+        rb.AddRelativeForce(Vector3.down * 5000 * Time.deltaTime, ForceMode.Acceleration);
 
         if (GLIDER_FLY)
         {
-            gliderMovements();
+            GliderMovements();
         }
 
         if (transform.GetChild(0).GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(2).IsName("SpinLeft") || transform.GetChild(0).GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(2).IsName("SpinRight") && particleSystemAntigravSpinTimer < 0.95f)
@@ -2308,17 +2209,15 @@ public class Player : MonoBehaviour
                     antiGravSpin[0].Play();
                     antiGravSpin[1].Play();
                 }
-                    
             }
         }
         else
         {
-            if(antiGravSpin.Length > 0)
+            if (antiGravSpin.Length > 0)
             {
                 antiGravSpin[0].Stop();
                 antiGravSpin[1].Stop();
             }
-            
         }
         if (particleSystemAntigravSpinTimer > 1.01f)
         {
@@ -2332,7 +2231,6 @@ public class Player : MonoBehaviour
         //spin
         for (int i = 0; i < 4; i++)
         {
-
             if (currentspeed < 6.5 && currentspeed > -6.5)
             {
                 tires[i].transform.Rotate(-90 * Time.deltaTime * currentspeed * 0.015f, 0, 0);
@@ -2390,7 +2288,7 @@ public class Player : MonoBehaviour
             if (IN_WATER)
             {
                 propeller.gameObject.SetActive(true);
-                float speed = currentspeed+3;
+                float speed = currentspeed + 3;
                 speed = Mathf.Clamp(speed, -20, 20);
                 propeller.Rotate(0, 0, speed, Space.Self);
             }
@@ -2401,12 +2299,13 @@ public class Player : MonoBehaviour
         }
 
     }
-    void disableItems()
+    void DisableItems()
     {
-        item_manager.used_Item_Done();
+        item_manager.OnUsedItemDone();
         item_manager.current_Item = "";
     }
-    public void stopDrift()
+
+    public void StopDrift()
     {
         drifting = false;
         playersounds.effectSounds[0].Stop();
@@ -2435,12 +2334,9 @@ public class Player : MonoBehaviour
         DriftDustLeft.GetChild(1).GetComponent<ParticleSystem>().Stop();
         DriftDustRight.GetChild(0).GetComponent<ParticleSystem>().Stop();
         DriftDustRight.GetChild(1).GetComponent<ParticleSystem>().Stop();
-
-        
     }
 
-
-    void lookAtOpponent()
+    void LookAtOpponent()
     {
         if (RACE_MANAGER.RACE_STARTED)
         {
@@ -2493,9 +2389,6 @@ public class Player : MonoBehaviour
                             lookAtOpponentEyes = true;
 
                         }
-
-
-
                     }
                     //headbone rotation + x rotation is look left and -  x rotation is look right
                     //use dir which is always positive (absolute value) and multiply it by -1 or 1 based on if the head rotation is - or +
@@ -2516,24 +2409,18 @@ public class Player : MonoBehaviour
                 headBone.localRotation = Quaternion.SlerpUnclamped(headBone.localRotation, Quaternion.Euler(0, 0, 0), 5 * Time.deltaTime);
             }
         }
-        
-
-
-
-
-
-
     }
-    void blinking()
+
+    void Blinking()
     {
         blinkingTimeCounter += Time.deltaTime;
-        if(!SpecialFace && reversingTime <= 0 && !lookAtOpponentEyes)
+        if (!SpecialFace && reversingTime <= 0 && !lookAtOpponentEyes)
         {
-            if(blinkingTimeCounter % 3 < 0.15 && blinkingTimeCounter % 3 > 0.1)
+            if (blinkingTimeCounter % 3 < 0.15 && blinkingTimeCounter % 3 > 0.1)
             {
                 current_face_material = faces[2];
             }
-            else if(blinkingTimeCounter % 3 <= 0.1 && blinkingTimeCounter % 3 >= 0.075)
+            else if (blinkingTimeCounter % 3 <= 0.1 && blinkingTimeCounter % 3 >= 0.075)
             {
                 current_face_material = faces[5];
             }
@@ -2544,9 +2431,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    IEnumerator happyFaceTrickJump()
+    IEnumerator HappyFaceTrickJump()
     {
-        for(int i = 0; i < 60; i++)
+        for (int i = 0; i < 60; i++)
         {
             yield return new WaitForSeconds(0.01f);
             current_face_material = faces[3];
@@ -2554,7 +2441,7 @@ public class Player : MonoBehaviour
         current_face_material = faces[0];
     }
 
-    IEnumerator trickJump()
+    IEnumerator TrickJump()
     {
         {
             //do your trick
@@ -2567,8 +2454,8 @@ public class Player : MonoBehaviour
             if (trickAnimCounter == 0)
             {
                 Driver.SetTrigger("JumpTrick1");
-                StartCoroutine(happyFaceTrickJump());
-                if (playersounds.Check_if_playing())
+                StartCoroutine(HappyFaceTrickJump());
+                if (playersounds.CheckIfSoundPlaying())
                 {
                     playersounds.MarioJumpTrickSounds[0].Play();
                 }
@@ -2576,8 +2463,8 @@ public class Player : MonoBehaviour
             else if (trickAnimCounter == 2)
             {
                 Driver.SetTrigger("GliderTrick");
-                StartCoroutine(happyFaceTrickJump());
-                if (playersounds.Check_if_playing())
+                StartCoroutine(HappyFaceTrickJump());
+                if (playersounds.CheckIfSoundPlaying())
                 {
                     playersounds.MarioJumpTrickSounds[1].Play();
                 }
@@ -2585,8 +2472,8 @@ public class Player : MonoBehaviour
             else if (trickAnimCounter == 1)
             {
                 Driver.SetTrigger("JumpTrick2");
-                StartCoroutine(happyFaceTrickJump());
-                if (playersounds.Check_if_playing())
+                StartCoroutine(HappyFaceTrickJump());
+                if (playersounds.CheckIfSoundPlaying())
                 {
                     playersounds.MarioJumpTrickSounds[2].Play();
                 }
@@ -2609,12 +2496,10 @@ public class Player : MonoBehaviour
                     yield return new WaitForSeconds(0.01f);
                 }
             }
-            
         }
-
     }
 
-    IEnumerator antiGravityColor()
+    IEnumerator AntiGravityColor()
     {
         if (!antiGravity)
         {
@@ -2627,7 +2512,7 @@ public class Player : MonoBehaviour
 
             if (!item_manager.StarPowerUp && !item_manager.isBullet)
             {
-                for(int i = 0; i < tireRenderers.Length; i++)
+                for (int i = 0; i < tireRenderers.Length; i++)
                 {
                     tireRenderers[i].material.SetColor("Color_B652FD79", Color.white);
                     tireRenderers[i].material.SetColor("Color_89B4C299", antiGravityTireColor);
@@ -2646,34 +2531,26 @@ public class Player : MonoBehaviour
                         axels.gameObject.SetActive(false);
                         if (j == 0 || j == 1) { tireArms[j].localScale = Vector3.LerpUnclamped(tireArms[j].localScale, new Vector3(1.5f, tireArms[j].localScale.y, tireArms[j].localScale.z), 20 * Time.deltaTime); }
                         if (j == 2 || j == 3) { tireArms[j].localScale = Vector3.LerpUnclamped(tireArms[j].localScale, new Vector3(1.2f, tireArms[j].localScale.y, tireArms[j].localScale.z), 20 * Time.deltaTime); }
-
                     }
-
                 }
             }
-            
-
-
 
             //rotate 90 degrees
             for (int i = 0; i < 30; i++)
             {
-                
                 TireParents[0].transform.localRotation = Quaternion.LerpUnclamped(TireParents[0].transform.localRotation, Quaternion.Euler(0, 0, 90), 12 * Time.deltaTime);
                 TireParents[1].transform.localRotation = Quaternion.LerpUnclamped(TireParents[1].transform.localRotation, Quaternion.Euler(0, 180, -90), 12 * Time.deltaTime);
                 TireParents[2].transform.localRotation = Quaternion.LerpUnclamped(TireParents[2].transform.localRotation, Quaternion.Euler(0, 0, -90), 12 * Time.deltaTime);
                 TireParents[3].transform.localRotation = Quaternion.LerpUnclamped(TireParents[3].transform.localRotation, Quaternion.Euler(0, 180, 90), 12 * Time.deltaTime);
                 yield return new WaitForSeconds(0.001f);
 
-                for(int j = 0; j < 4; j++)
+                for (int j = 0; j < 4; j++)
                 {
                     TireParents[j].transform.GetChild(1).GetComponent<Renderer>().material.SetColor("_Color", Color.Lerp(TireParents[j].transform.GetChild(1).GetComponent<Renderer>().material.GetColor("_Color"), lightDecalColor, 12 * Time.deltaTime));
                 }
-
-
             }
 
-            if(!item_manager.StarPowerUp && !item_manager.isBullet)
+            if (!item_manager.StarPowerUp && !item_manager.isBullet)
             {
                 for (int i = 0; i < 60; i++)
                 {
@@ -2687,17 +2564,16 @@ public class Player : MonoBehaviour
                     }
                 }
             }
-            
+
         }
-        
+
     }
-    IEnumerator exitAntiGravity()
+
+    IEnumerator ExitAntiGravity()
     {
         if (antiGravity)
         {
             playersounds.effectSounds[24].Play();
-
-            
 
             for (int i = 0; i < 25; i++)
             {
@@ -2721,9 +2597,6 @@ public class Player : MonoBehaviour
                         TireParents[j].transform.GetChild(1).GetComponent<Renderer>().material.SetColor("_Color", Color.Lerp(TireParents[j].transform.GetChild(1).GetComponent<Renderer>().material.GetColor("_Color"), new Color(0, 0, 0, 0), 12 * Time.deltaTime));
                     }
                 }
-
-                 
-
             }
             for (int i = 0; i < TireParents.Length; i++)
             {
@@ -2737,24 +2610,23 @@ public class Player : MonoBehaviour
                 {
                     axels.gameObject.SetActive(true);
 
-                    tireArms[j].localScale = Vector3.LerpUnclamped(tireArms[j].localScale, new Vector3(0.8f, tireArms[j].localScale.y, tireArms[j].localScale.z), 20 * Time.deltaTime); 
-
+                    tireArms[j].localScale = Vector3.LerpUnclamped(tireArms[j].localScale, new Vector3(0.8f, tireArms[j].localScale.y, tireArms[j].localScale.z), 20 * Time.deltaTime);
 
                     TireParents[j].transform.localPosition = Vector3.LerpUnclamped(TireParents[j].transform.localPosition, tireLocalPositions[j], 12 * Time.deltaTime);
 
                 }
             }
         }
-       
+
     }
 
-    void tireDirtEffect()
+    void TireDirtEffect()
     {
         if (Is_Dirt_Track)
         {
             if (Input.GetKey(KeyCode.Space) && !item_manager.isBullet && !item_manager.StarPowerUp)
             {
-                for(int i = 0; i < tireRenderers.Length; i++)
+                for (int i = 0; i < tireRenderers.Length; i++)
                 {
                     tireRenderers[i].material.SetColor("Color_7E73E7E8", Color.LerpUnclamped(tireRenderers[i].material.GetColor("Color_7E73E7E8"), dirtColor, 0.8f * Time.deltaTime));
                 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -42,13 +40,14 @@ public class ChainChompBall : MonoBehaviour
                 audiosrc.maxDistance = 500;
             }
         }
-        
+
     }
+
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.tag == "Ground")
+        if (collision.gameObject.tag == "Ground")
         {
-            if(cf.force.y < 0)
+            if (cf.force.y < 0)
             {
                 rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y * -1, rb.velocity.z);
             }
@@ -66,7 +65,6 @@ public class ChainChompBall : MonoBehaviour
 
                 }
             }
-
         }
     }
 }

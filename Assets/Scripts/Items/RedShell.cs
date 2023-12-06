@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class RedShell : MonoBehaviour
 {
@@ -9,7 +7,6 @@ public class RedShell : MonoBehaviour
 
     public Transform pathOption1;
     public Transform pathOption2;
-
 
     public int current_node = 0;
 
@@ -47,17 +44,13 @@ public class RedShell : MonoBehaviour
     public bool needsExtraDownForceAntigravity = false;
     private bool antiGravityGrounded = false;
 
-
-
     // Start is called before the first frame update
     void Start()
     {
-
         pathMain = pathOption1;
 
         sphereCollider = GetComponent<SphereCollider>();
         rb = GetComponent<Rigidbody>();
-       
 
         if (who_threw_shell.Equals("Player"))
         {
@@ -68,12 +61,7 @@ public class RedShell : MonoBehaviour
 
         rm = GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
-
-
-        
     }
-
-
 
     // Update is called once per frame
     void FixedUpdate()
@@ -81,51 +69,44 @@ public class RedShell : MonoBehaviour
         lifetime += Time.deltaTime;
         DetectTarget();
 
-        if(!LockedOnTarget)
-            RotateTowards();
+        if (!LockedOnTarget)
+        {
+            RotateTowards(); 
+        }
         else
         {
             ChaseTarget();
         }
-        
+
         move();
 
         if (!GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().GLIDER_FLY)
         {
-            if(!AntiGravity)
-                rb.AddForce(Vector3.down * 15000 * Time.deltaTime, ForceMode.Acceleration);
-           
+            if (!AntiGravity)
+            {
+                rb.AddForce(Vector3.down * 15000 * Time.deltaTime, ForceMode.Acceleration); 
+            }
         }
         if (AntiGravity)
         {
             rb.AddRelativeForce(Vector3.down * 30000 * Time.deltaTime, ForceMode.Acceleration);
         }
-        if(!closeToPlayer)
+        if (!closeToPlayer)
         {
-            
-                if(Vector3.Distance(player.position, transform.position) < 100 && who_threw_shell != player.name)
-                {
-                    closeToPlayer = true;
-                    StartCoroutine(rm.warningRedShell(transform));
-                }
-            
+            if (Vector3.Distance(player.position, transform.position) < 100 && who_threw_shell != player.name)
+            {
+                closeToPlayer = true;
+                StartCoroutine(rm.WarningRedShell(transform));
+            }
         }
-
     }
-
-
-
-
-
 
     void RotateTowards()
     {
-
-
         Ray ground = new Ray(transform.position, -transform.up);
         RaycastHit hit;
 
-        if(chase_opponent == null)
+        if (chase_opponent == null)
         {
             if (AntiGravity)
             {
@@ -133,12 +114,10 @@ public class RedShell : MonoBehaviour
                 {
                     transform.rotation = Quaternion.LerpUnclamped(transform.rotation, Quaternion.FromToRotation(transform.up * 2, hit.normal) * transform.rotation, 10 * Time.deltaTime);
 
-
                     //angle calc
                     Vector3 myangle = pathMain.GetChild(current_node).position - transform.position;
                     Vector3 angle = Vector3.Cross(transform.forward, myangle);
                     dir = Vector3.Dot(angle, transform.up);
-
 
                     float none = 0;
 
@@ -146,8 +125,6 @@ public class RedShell : MonoBehaviour
 
                     //float y = Mathf.SmoothDamp(transform.eulerAngles.y, transform.eulerAngles.y + dir, ref none, 2.5f * Time.deltaTime);
                     y = Mathf.SmoothDamp(y, dir, ref none, 2.5f * Time.deltaTime);
-
-
 
                     transform.Rotate(0, y / 2, 0, Space.Self);
                 }
@@ -173,10 +150,8 @@ public class RedShell : MonoBehaviour
                 }
             }
         }
-        
-        
-
     }
+
     void ChaseTarget()
     {
         Ray ground = new Ray(transform.position, -transform.up);
@@ -185,24 +160,17 @@ public class RedShell : MonoBehaviour
         {
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.up * 2, hit.normal) * transform.rotation, 6 * Time.deltaTime);
 
-
             //angle calc
             Vector3 myangle = chase_opponent.position - transform.position;
             Vector3 angle = Vector3.Cross(transform.forward, myangle);
             dir = Vector3.Dot(angle, transform.up);
-
-
-            float none = 0;
 
             // maybe get dir, and make float y lerp to that dir value, and then rotate y axis (space.self) according to that y value or something
 
             //float y = Mathf.SmoothDamp(transform.eulerAngles.y, transform.eulerAngles.y + dir, ref none, 2.5f * Time.deltaTime);
             y = dir;
 
-
-
-            transform.Rotate(0, y*2, 0, Space.Self);
-
+            transform.Rotate(0, y * 2, 0, Space.Self);
         }
 
 
@@ -211,9 +179,10 @@ public class RedShell : MonoBehaviour
     {
         Vector3 vel = transform.forward * speed * Time.deltaTime;
 
-        if(!AntiGravity)
-            vel.y = rb.velocity.y;
-       
+        if (!AntiGravity)
+        {
+            vel.y = rb.velocity.y; 
+        }
 
         rb.velocity = vel;
 
@@ -226,28 +195,28 @@ public class RedShell : MonoBehaviour
     {
         if (!LockedOnTarget)
         {
-            if(who_threw_shell == "Mario")
+            if (who_threw_shell == "Mario")
             {
                 for (int i = 0; i < opponents.Length; i++)
                 {
                     if (Vector3.Distance(transform.position, opponents[i].transform.position) < 30)
                     {
-                        if(GameObject.Find(who_threw_shell).GetComponent<LapCounter>().totalCheckpointVal < opponents[i].GetComponent<LapCounter>().totalCheckpointVal)
+                        if (GameObject.Find(who_threw_shell).GetComponent<LapCounter>().totalCheckpointVal < opponents[i].GetComponent<LapCounter>().totalCheckpointVal)
                         {
                             chase_opponent = opponents[i].transform;
                             LockedOnTarget = true;
                             break;
                         }
-                        else if(GameObject.Find(who_threw_shell).GetComponent<LapCounter>().totalCheckpointVal == opponents[i].GetComponent<LapCounter>().totalCheckpointVal)
+                        else if (GameObject.Find(who_threw_shell).GetComponent<LapCounter>().totalCheckpointVal == opponents[i].GetComponent<LapCounter>().totalCheckpointVal)
                         {
-                            if(GameObject.Find(who_threw_shell).GetComponent<LapCounter>().distanceToNextCheckpoint > opponents[i].GetComponent<LapCounter>().distanceToNextCheckpoint)
+                            if (GameObject.Find(who_threw_shell).GetComponent<LapCounter>().distanceToNextCheckpoint > opponents[i].GetComponent<LapCounter>().distanceToNextCheckpoint)
                             {
                                 chase_opponent = opponents[i].transform;
                                 LockedOnTarget = true;
                                 break;
                             }
                         }
-                        
+
                     }
                 }
             }
@@ -255,7 +224,7 @@ public class RedShell : MonoBehaviour
             {
                 for (int i = 0; i < allplayers.Length; i++)
                 {
-                    if (Vector3.Distance(transform.position, allplayers[i].transform.position) < 30     &&     allplayers[i].name != who_threw_shell)
+                    if (Vector3.Distance(transform.position, allplayers[i].transform.position) < 30 && allplayers[i].name != who_threw_shell)
                     {
                         if (allplayers[i].GetComponent<LapCounter>().totalCheckpointVal > GameObject.Find(who_threw_shell).GetComponent<LapCounter>().totalCheckpointVal)
                         {
@@ -263,26 +232,20 @@ public class RedShell : MonoBehaviour
                             LockedOnTarget = true;
                             break;
                         }
-                        else if(GameObject.Find(who_threw_shell).GetComponent<LapCounter>().totalCheckpointVal == allplayers[i].GetComponent<LapCounter>().totalCheckpointVal)
+                        else if (GameObject.Find(who_threw_shell).GetComponent<LapCounter>().totalCheckpointVal == allplayers[i].GetComponent<LapCounter>().totalCheckpointVal)
                         {
-                            if(GameObject.Find(who_threw_shell).GetComponent<LapCounter>().distanceToNextCheckpoint > allplayers[i].GetComponent<LapCounter>().distanceToNextCheckpoint)
+                            if (GameObject.Find(who_threw_shell).GetComponent<LapCounter>().distanceToNextCheckpoint > allplayers[i].GetComponent<LapCounter>().distanceToNextCheckpoint)
                             {
                                 chase_opponent = allplayers[i].transform;
                                 LockedOnTarget = true;
                                 break;
                             }
                         }
-                        
                     }
-
                 }
             }
-            
-
         }
     }
-
-
 
     private void OnTriggerEnter(Collider other)
     {
@@ -293,21 +256,20 @@ public class RedShell : MonoBehaviour
             {
                 current_node = 0;
             }
-            else if(current_node != pathMain.childCount)
+            else if (current_node != pathMain.childCount)
             {
                 current_node++;
             }
-
         }
 
-        if(other.gameObject.tag == "TrailingItem")
+        if (other.gameObject.tag == "TrailingItem")
         {
-            if(other.gameObject.name == "TrailingBanana")
+            if (other.gameObject.name == "TrailingBanana")
             {
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().CurrentTrailingItem.SetActive(false);
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().CurrentTrailingItem = null;
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().current_Item = "";
-                other.transform.parent.parent.parent.GetComponent<ItemManager>().used_Item_Done();
+                other.transform.parent.parent.parent.GetComponent<ItemManager>().OnUsedItemDone();
                 destroyShell();
             }
             else
@@ -320,10 +282,10 @@ public class RedShell : MonoBehaviour
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().CurrentTrailingItem.SetActive(false);
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().CurrentTrailingItem = null;
                 other.transform.parent.parent.parent.GetComponent<ItemManager>().current_Item = "";
-                other.transform.parent.parent.parent.GetComponent<ItemManager>().used_Item_Done();
+                other.transform.parent.parent.parent.GetComponent<ItemManager>().OnUsedItemDone();
                 destroyShell();
             }
-        }  
+        }
     }
 
     private void OnTriggerStay(Collider other)
@@ -358,34 +320,29 @@ public class RedShell : MonoBehaviour
                 transform.rotation = Quaternion.SlerpUnclamped(transform.rotation, Quaternion.Euler(transform.eulerAngles.x, other.gameObject.GetComponent<AntiGravityExitRotate>().newRotation.y, transform.eulerAngles.z), 3 * Time.deltaTime);
             }
         }
-
-
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag != "Ground" && collision.gameObject.tag != "Dirt")
         {
-
             if (collision.gameObject.name.Equals(who_threw_shell)) //wait 0.5 second before detecting collisions with person 
             {
                 if (lifetime > 0.5f)
                 {
                     destroyShell();
-
                 }
             }
-            
+
             //hitting wach other
-            if(collision.gameObject.tag == "Shell")
+            if (collision.gameObject.tag == "Shell")
             {
                 destroyShell();
-                
             }
-            if(collision.gameObject.tag == "Banana" || collision.gameObject.tag == "Cow")
+            if (collision.gameObject.tag == "Banana" || collision.gameObject.tag == "Cow")
             {
                 destroyShell();
-                if(collision.gameObject.tag != "Cow")
+                if (collision.gameObject.tag != "Cow")
                 {
                     Destroy(collision.gameObject);
                 }
@@ -396,11 +353,11 @@ public class RedShell : MonoBehaviour
             {
                 if (!collision.gameObject.GetComponent<OpponentItemManager>().StarPowerUp)
                 {
-                    collision.gameObject.GetComponent<OpponentItemManager>().hitByShell(); //the opponent has the function that does all this work
+                    collision.gameObject.GetComponent<OpponentItemManager>().HitByShell(); //the opponent has the function that does all this work
                     if (who_threw_shell == "Mario")
                     {
                         GameObject.Find("Mario").GetComponent<Player>().Driver.SetTrigger("HitItem");
-                        if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().Check_if_playing())
+                        if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().CheckIfSoundPlaying())
                             GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().effectSounds[18].Play();
                     }
                     destroyShell();
@@ -413,19 +370,20 @@ public class RedShell : MonoBehaviour
                 {
                     destroyShell();
                 }
-                
             }
-            if(collision.gameObject.tag == "Player" && Vector3.Distance(transform.position, collision.transform.position) < 5)
+            if (collision.gameObject.tag == "Player" && Vector3.Distance(transform.position, collision.transform.position) < 5)
             {
-                if(who_threw_shell != collision.gameObject.name)
+                if (who_threw_shell != collision.gameObject.name)
                 {
                     if (!collision.gameObject.GetComponent<ItemManager>().StarPowerUp)
-                    {                        StartCoroutine(collision.gameObject.GetComponent<Player>().hitByShell()); //the player has the function that does all this work
+                    {
+                        StartCoroutine(collision.gameObject.GetComponent<Player>().HitByShell()); //the player has the function that does all this work
 
                         try
                         {
                             GameObject.Find("Main Camera").GetComponent<Animator>().SetTrigger("ShellHit");
-                        }catch(System.Exception e)
+                        }
+                        catch (System.Exception e)
                         {
 
                         }
@@ -433,12 +391,7 @@ public class RedShell : MonoBehaviour
                     destroyShell();
                 }
             }
-
-
-        }     
-
-
-
+        }
     }
 
     private void OnCollisionStay(Collision collision)

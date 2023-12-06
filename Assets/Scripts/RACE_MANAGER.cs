@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-
 
 public class RACE_MANAGER : MonoBehaviour
 {
@@ -24,18 +22,14 @@ public class RACE_MANAGER : MonoBehaviour
 
     private float RaceTime = 0;
 
-
     public List<LapCounter> lapCounters = new List<LapCounter>();
     public List<LapCounter> sortedRacers = new List<LapCounter>();
-
 
     private float sortTime = 0;
 
     public static bool RACE_STARTED = false;
     public static bool RACE_COMPLETED = false;
     public static bool raceFinishStuff = false;
-
-    private int lastPos;
 
     public GameObject spectatorSounds;
     public GameObject itemSystem;
@@ -55,11 +49,9 @@ public class RACE_MANAGER : MonoBehaviour
     public GameObject[] set2;
     public GameObject[] set3;
 
-
     public static Transform allPaths;
 
     public TrolleySystem trolleySystem;
-
 
     public static float countDownTime = 0;
     private bool startCountDownInternalTimer = false;
@@ -73,13 +65,11 @@ public class RACE_MANAGER : MonoBehaviour
     {
         Application.targetFrameRate = 60;
     }
-    // Start is called before the first frame update
+
     void Start()
     {
         allPaths = GameObject.Find("AI PATHS").transform;
         player = GameObject.FindGameObjectWithTag("Player").transform;
-
-
     }
 
     // Update is called once per frame
@@ -99,15 +89,14 @@ public class RACE_MANAGER : MonoBehaviour
             }
             sortTime += Time.deltaTime;
 
-            if(sortTime > 0.1f)
+            if (sortTime > 0.1f)
             {
-                calculateRacerPosition();
+                CalculateRacerPosition();
                 sortTime = 0;
             }
-
         }
+
         //camera stuff
-        
         if (Input.GetKeyDown(KeyCode.Alpha1) && RACE_STARTED && !RACE_COMPLETED) //if pressed 1 and back cam is not enabled, disable front cam and enable FP cam
         {
             if (!Input.GetKey(KeyCode.B))
@@ -153,7 +142,6 @@ public class RACE_MANAGER : MonoBehaviour
                 BackCam.SetActive(false);
                 FrontCam.GetComponent<Camera>().enabled = true;
             }
-
         }
 
         if (RACE_COMPLETED && !raceFinishStuff)
@@ -162,7 +150,7 @@ public class RACE_MANAGER : MonoBehaviour
             StartCoroutine(FinishRace());
         }
 
-        if(GameObject.FindGameObjectWithTag("Player").GetComponent<LapCounter>().LAPCOUNT == MAXLAPS && !lastLap)
+        if (GameObject.FindGameObjectWithTag("Player").GetComponent<LapCounter>().LAPCOUNT == MAXLAPS && !lastLap)
         {
             lastLap = true;
             music.Stop();
@@ -179,7 +167,7 @@ public class RACE_MANAGER : MonoBehaviour
         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().SceneEntryFinished = true; //start the engine sounds
 
         //make the main camera active, start it's entry animation, wait a bit before playing the audio, and then disable the sceneEntry camera, and start the countdown in 4.5 seconds
-        FrontCam.SetActive(true);                                                                   
+        FrontCam.SetActive(true);
         FrontCam.GetComponent<Animator>().SetTrigger("Entry");
         yield return new WaitForSeconds(0.5f);
         FrontCam.GetComponent<AudioSource>().Play();
@@ -190,14 +178,14 @@ public class RACE_MANAGER : MonoBehaviour
         startCountDownInternalTimer = true;
     }
 
-    public void calculateRacerPosition()
+    public void CalculateRacerPosition()
     {
 
         sortedRacers = new List<LapCounter>(lapCounters);
         sortedRacers.Sort(SortByScore);
 
 
-        for(int i = 0; i < sortedRacers.Count; i++)
+        for (int i = 0; i < sortedRacers.Count; i++)
         {
             sortedRacers[i].Position = i + 1;
         }
@@ -205,7 +193,7 @@ public class RACE_MANAGER : MonoBehaviour
     }
     int SortByScore(LapCounter p1, LapCounter p2)
     {
-        if(p1.totalCheckpointVal != p2.totalCheckpointVal)
+        if (p1.totalCheckpointVal != p2.totalCheckpointVal)
             return -p1.totalCheckpointVal.CompareTo(p2.totalCheckpointVal);
         else
         {
@@ -218,7 +206,7 @@ public class RACE_MANAGER : MonoBehaviour
     {
         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().effectSounds[14].Play();
 
-        if(spectatorSounds !=null)
+        if (spectatorSounds != null)
             spectatorSounds.SetActive(false);
         itemSystem.SetActive(false);
         FrontCam.transform.parent.parent.GetComponent<AudioSource>().Stop();
@@ -239,7 +227,7 @@ public class RACE_MANAGER : MonoBehaviour
             yield return new WaitForSeconds(2.5f);
             FrontCam.GetComponent<Animator>().SetBool("RaceEndCam", true);
             yield return new WaitForSeconds(0.5f);
-            resultsUI.createResults(sortedRacers);
+            resultsUI.CreateResults(sortedRacers);
             yield return new WaitForSeconds(3f);
             GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().effectSounds[17].Play();
 
@@ -255,7 +243,7 @@ public class RACE_MANAGER : MonoBehaviour
             yield return new WaitForSeconds(2.5f);
             FrontCam.GetComponent<Animator>().SetBool("RaceEndCam", true);
             yield return new WaitForSeconds(0.5f);
-            resultsUI.createResults(sortedRacers);
+            resultsUI.CreateResults(sortedRacers);
             yield return new WaitForSeconds(3f);
             GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().effectSounds[17].Play();
         }
@@ -270,7 +258,7 @@ public class RACE_MANAGER : MonoBehaviour
             yield return new WaitForSeconds(2.5f);
             FrontCam.GetComponent<Animator>().SetBool("RaceEndCam", true);
             yield return new WaitForSeconds(0.5f);
-            resultsUI.createResults(sortedRacers);
+            resultsUI.CreateResults(sortedRacers);
             yield return new WaitForSeconds(3f);
             GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSounds>().effectSounds[22].Play(); //and this
         }
@@ -278,13 +266,13 @@ public class RACE_MANAGER : MonoBehaviour
     }
 
 
-    public IEnumerator warningRedShell(Transform redshell) //this function gets called by the incoming redshell once, and the function will handle that redshell alone. This way, if there are more than one, the function can be called again, referring to another redshell
+    public IEnumerator WarningRedShell(Transform redshell) //this function gets called by the incoming redshell once, and the function will handle that redshell alone. This way, if there are more than one, the function can be called again, referring to another redshell
     {
         GameObject warning = Instantiate(RedShellWarning, RedShellWarning.transform.position, RedShellWarning.transform.rotation);
         warning.SetActive(true);
         warning.transform.SetParent(Canvas);
 
-        while(redshell.GetComponent<RedShell>().isactive && !RACE_COMPLETED && redshell.GetComponent<RedShell>().current_node <= player.GetComponent<ItemManager>().currentWayPoint)
+        while (redshell.GetComponent<RedShell>().isactive && !RACE_COMPLETED && redshell.GetComponent<RedShell>().current_node <= player.GetComponent<ItemManager>().currentWayPoint)
         {
             Vector3 myangle = player.position - redshell.position;
             Vector3 angle = Vector3.Cross(-player.forward, myangle);
@@ -293,20 +281,16 @@ public class RACE_MANAGER : MonoBehaviour
 
             Vector3 oldPos = warning.GetComponent<RectTransform>().localPosition;
             oldPos.x = 0 + dir * 10;
-           
+
 
             warning.GetComponent<RectTransform>().localPosition = oldPos;
-
-
-            
-
 
             yield return new WaitForSeconds(0.02f);
         }
 
         Destroy(warning);
     }
-    public IEnumerator warningBlueShell(Transform blueshell) //this function gets called by the incoming redshell once, and the function will handle that redshell alone. This way, if there are more than one, the function can be called again, referring to another redshell
+    public IEnumerator WarningBlueShell(Transform blueshell) //this function gets called by the incoming redshell once, and the function will handle that redshell alone. This way, if there are more than one, the function can be called again, referring to another redshell
     {
         GameObject warning = Instantiate(BlueShellWarning, BlueShellWarning.transform.position, BlueShellWarning.transform.rotation);
         warning.SetActive(true);
@@ -337,7 +321,7 @@ public class RACE_MANAGER : MonoBehaviour
 
         Destroy(warning);
     }
-    public IEnumerator warningStar(Transform opponent) //this function gets called by the incoming redshell once, and the function will handle that redshell alone. This way, if there are more than one, the function can be called again, referring to another redshell
+    public IEnumerator WarningStar(Transform opponent) //this function gets called by the incoming redshell once, and the function will handle that redshell alone. This way, if there are more than one, the function can be called again, referring to another redshell
     {
         GameObject warning = Instantiate(StarWarning, StarWarning.transform.position, StarWarning.transform.rotation);
         warning.SetActive(true);
@@ -368,7 +352,7 @@ public class RACE_MANAGER : MonoBehaviour
         Destroy(warning);
     }
 
-    public IEnumerator warningBullet(Transform opponent) //this function gets called by the incoming redshell once, and the function will handle that redshell alone. This way, if there are more than one, the function can be called again, referring to another redshell
+    public IEnumerator WarningBullet(Transform opponent) //this function gets called by the incoming redshell once, and the function will handle that redshell alone. This way, if there are more than one, the function can be called again, referring to another redshell
     {
         GameObject warning = Instantiate(BulletWarning, BulletWarning.transform.position, BulletWarning.transform.rotation);
         warning.SetActive(true);
@@ -403,9 +387,9 @@ public class RACE_MANAGER : MonoBehaviour
 
     public void DisableSet1()
     {
-        for(int i = 0; i < set1.Length; i++)
+        for (int i = 0; i < set1.Length; i++)
         {
-            if(set1[i].name.IndexOf("Cow") >= 0)
+            if (set1[i].name.IndexOf("Cow") >= 0)
             {
                 set1[i].transform.GetChild(1).gameObject.SetActive(false);
             }
@@ -468,7 +452,8 @@ public class RACE_MANAGER : MonoBehaviour
             }
         }
     }
-    public void enableAllSets()
+
+    public void EnableAllSets()
     {
         for (int i = 0; i < set1.Length; i++)
         {
@@ -504,7 +489,4 @@ public class RACE_MANAGER : MonoBehaviour
             }
         }
     }
-
-
-
 }

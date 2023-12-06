@@ -11,8 +11,6 @@ public class ComputerDriver : MonoBehaviour
     private Rigidbody rb;
     public LayerMask mask;
 
-    
-
     [Header("Movement")]
     public Transform path;
     [HideInInspector]
@@ -57,7 +55,7 @@ public class ComputerDriver : MonoBehaviour
     bool slowDown;
 
     [HideInInspector]
-    public bool GLIDER_FLY = false;
+    public bool GliderFly = false;
     private bool aboutToFly;
 
     //will get shot up in the air with a constantly changing force
@@ -67,7 +65,6 @@ public class ComputerDriver : MonoBehaviour
     private float jumpPanelDownForce = 0;
 
     public GameObject GLider;
-    
 
     public Animator DriverAnim;
 
@@ -92,7 +89,6 @@ public class ComputerDriver : MonoBehaviour
     public bool AntiGravity;
     Quaternion rot;
 
-
     [Header("Anti Gravity Tire effects and animation")]
     public Color antiGravityTireColor;
     public Renderer[] tireRenderers;
@@ -111,32 +107,25 @@ public class ComputerDriver : MonoBehaviour
     private float glideAngleZ = 0;
     private float glideAngleX = 0;
 
-
-    // Start is called before the first frame update
     void Start()
     {
-
         kartMat.SetVector("Vector4_70BBF882", new Vector4(0, 0, 0, 0));
-
 
         rb = GetComponent<Rigidbody>();
         item_manage = GetComponent<OpponentItemManager>();
-
-
 
         Right_Wheel_Drift_PS = DriftPS.transform.GetChild(0).gameObject;
         Left_Wheel_Drift_PS = DriftPS.transform.GetChild(1).gameObject;
 
         raceManager = GameObject.Find("RaceManager").GetComponent<RACE_MANAGER>();
         //get all players except yourself
-        for(int i = 0; i < raceManager.lapCounters.Count; i++)
+        for (int i = 0; i < raceManager.lapCounters.Count; i++)
         {
-            if(raceManager.lapCounters[i] != GetComponent<LapCounter>())
+            if (raceManager.lapCounters[i] != GetComponent<LapCounter>())
             {
                 allPlayers.Add(raceManager.lapCounters[i].transform);
             }
         }
-        
 
         int strtBoost = Random.Range(0, 2);
         StartBoost = strtBoost == 0 ? true : false;
@@ -145,8 +134,6 @@ public class ComputerDriver : MonoBehaviour
         {
             tireLocalPositions[i] = TireParents[i].transform.localPosition;
         }
-
-
     }
 
     // Update is called once per frame
@@ -156,8 +143,7 @@ public class ComputerDriver : MonoBehaviour
 
         if (!RACE_MANAGER.RACE_COMPLETED)
         {
-
-            if(GetComponent<LapCounter>().totalCheckpointVal > (GameObject.FindGameObjectWithTag("Player").GetComponent<LapCounter>().totalCheckpointVal + 15))
+            if (GetComponent<LapCounter>().totalCheckpointVal > (GameObject.FindGameObjectWithTag("Player").GetComponent<LapCounter>().totalCheckpointVal + 15))
             {
                 Desired_Max_Speed = 55;
             }
@@ -167,21 +153,23 @@ public class ComputerDriver : MonoBehaviour
             }
         }
 
-        if(!RACE_MANAGER.RACE_STARTED && !RACE_MANAGER.RACE_COMPLETED)
+        if (!RACE_MANAGER.RACE_STARTED && !RACE_MANAGER.RACE_COMPLETED)
         {
             if (StartBoost)
             {
-                if(RACE_MANAGER.countDownTime > 1.2f)
+                if (RACE_MANAGER.countDownTime > 1.2f)
                 {
                     transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetBool("StartTurbo", true);
                     tires[2].transform.Rotate(-90 * Time.deltaTime * 75 / 5.5f, 0, 0);
                     tires[3].transform.Rotate(-90 * Time.deltaTime * 75 / 5.5f, 0, 0);
                     startBoostTime += Time.deltaTime;
 
-                    for(int i = 0; i < startBoostDust.childCount && isDirtTrack; i++)
+                    for (int i = 0; i < startBoostDust.childCount && isDirtTrack; i++)
                     {
-                        if(!startBoostDust.GetChild(i).GetComponent<ParticleSystem>().isPlaying)
-                            startBoostDust.GetChild(i).GetComponent<ParticleSystem>().Play();
+                        if (!startBoostDust.GetChild(i).GetComponent<ParticleSystem>().isPlaying)
+                        {
+                            startBoostDust.GetChild(i).GetComponent<ParticleSystem>().Play(); 
+                        }
                     }
                 }
             }
@@ -191,20 +179,22 @@ public class ComputerDriver : MonoBehaviour
         if (RACE_MANAGER.RACE_STARTED && !item_manage.isBullet)
         {
             startBoostTime -= Time.deltaTime;
-            if(startBoostTime > 0)
+            if (startBoostTime > 0)
             {
-                current_speed = Mathf.Lerp(current_speed, Boost_Speed, 0.5f* Time.deltaTime);
+                current_speed = Mathf.Lerp(current_speed, Boost_Speed, 0.5f * Time.deltaTime);
                 for (int i = 0; i < startBoostDust.childCount; i++)
                 {
                     if (startBoostDust.GetChild(i).GetComponent<ParticleSystem>().isPlaying)
+                    {
                         startBoostDust.GetChild(i).GetComponent<ParticleSystem>().Stop();
+                    }
                 }
             }
             else
             {
                 transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetBool("StartTurbo", false);
             }
-            
+
 
             if (StartBoost)
             {
@@ -223,7 +213,7 @@ public class ComputerDriver : MonoBehaviour
             animations();
             lookAtOthers();
 
-            for(int i = 0; i < exhaustParticles.transform.childCount; i++)
+            for (int i = 0; i < exhaustParticles.transform.childCount; i++)
             {
                 exhaustParticles.transform.GetChild(i).GetComponent<ParticleSystem>().Stop();
             }
@@ -239,7 +229,9 @@ public class ComputerDriver : MonoBehaviour
                 {
                     ParticleSystem currentboost = BoostPS.transform.GetChild(i).GetComponent<ParticleSystem>();
                     if (!currentboost.isPlaying)
+                    {
                         currentboost.Play();
+                    }
                 }
             }
             if (boost_time <= 0)
@@ -252,13 +244,15 @@ public class ComputerDriver : MonoBehaviour
                 {
                     ParticleSystem currentboost = BoostPS.transform.GetChild(i).GetComponent<ParticleSystem>();
                     if (currentboost.isPlaying)
+                    {
                         currentboost.Stop();
+                    }
                 }
             }
 
-            if(REALSPEED > 40 && !driftleft && !driftright && !GLIDER_FLY && isDirtTrack)
+            if (REALSPEED > 40 && !driftleft && !driftright && !GliderFly && isDirtTrack)
             {
-                for(int i = 0; i < dustPS.transform.childCount; i++)
+                for (int i = 0; i < dustPS.transform.childCount; i++)
                 {
                     dustPS.transform.GetChild(i).GetComponent<ParticleSystem>().Play();
                 }
@@ -270,7 +264,7 @@ public class ComputerDriver : MonoBehaviour
                     dustPS.transform.GetChild(i).GetComponent<ParticleSystem>().Stop();
                 }
             }
-            
+
         }
         else if (item_manage.isBullet)
         {
@@ -301,7 +295,7 @@ public class ComputerDriver : MonoBehaviour
         }
         if (RACE_MANAGER.RACE_STARTED)
         {
-            for(int i = 0; i < exhaustParticles.transform.childCount; i++)
+            for (int i = 0; i < exhaustParticles.transform.childCount; i++)
             {
                 exhaustParticles.transform.GetChild(i).GetComponent<ParticleSystem>().Stop();
             }
@@ -320,37 +314,34 @@ public class ComputerDriver : MonoBehaviour
 
     void steer()
     {
-
         Vector3 lookat = path.GetChild(current_node).position;
 
-        
         //angle calc
         Vector3 myangle = lookat - transform.position;
         Vector3 angle = Vector3.Cross(transform.forward, myangle);
         dir = Vector3.Dot(angle, transform.up);
 
-
         float none = 0;
 
-
-
         y = Mathf.SmoothDamp(y, dir, ref none, 2.5f * Time.deltaTime);
-        transform.Rotate(0, y/turnSpeedDivider, 0, Space.Self);
-
-
+        transform.Rotate(0, y / turnSpeedDivider, 0, Space.Self);
     }
     void Move()
     {
         collideCooldown -= Time.deltaTime;
 
         item_manage.item_select_time += Time.deltaTime;
-        if(!item_manage.HitByShell_)
+        if (!item_manage.HitByShell_)
+        {
             current_speed = Mathf.Lerp(current_speed, max_speed, 0.5f * Time.deltaTime);
-
-
+        }
+        
         Vector3 vel = transform.forward * current_speed;
-        if(!AntiGravity)
+        if (!AntiGravity)
+        {
             vel.y = rb.velocity.y;
+        }
+
         rb.velocity = vel;
 
         rb.AddRelativeForce(Vector3.down * 5000 * Time.deltaTime, ForceMode.Acceleration);
@@ -363,41 +354,40 @@ public class ComputerDriver : MonoBehaviour
             }
         }
 
-
         if (!grounded && !boost)
         {
             max_speed = 40;
             //current_speed = Mathf.Lerp(current_speed, max_speed, 4);
         }
         else
+        {
             max_speed = Desired_Max_Speed;
+        }
 
-        if(item_manage.HitByShell_)
+        if (item_manage.HitByShell_)
         {
             current_speed = Mathf.Lerp(current_speed, 0, 2 * Time.deltaTime);
         }
         if (item_manage.HitByBanana_)
         {
-            
             current_speed = Mathf.Lerp(current_speed, 0, 3 * Time.deltaTime);
-
         }
 
-        if(GLIDER_FLY || aboutToFly)
+        if (GliderFly || aboutToFly)
         {
             Vector3 GlideVel = rb.velocity;
             GlideVel.y *= 0.5f;
             rb.velocity = GlideVel;
 
-            if (GLIDER_FLY)
+            if (GliderFly)
             {
                 //steering
-                if(y > 5)
+                if (y > 5)
                 {
                     Quaternion targetRot = Quaternion.Euler(glideAngleX, transform.eulerAngles.y, glideAngleZ - 30);
                     transform.rotation = Quaternion.SlerpUnclamped(transform.rotation, targetRot, 3 * Time.deltaTime);
                 }
-                else if(y <= -5)
+                else if (y <= -5)
                 {
                     Quaternion targetRot = Quaternion.Euler(glideAngleX, transform.eulerAngles.y, glideAngleZ + 30);
                     transform.rotation = Quaternion.SlerpUnclamped(transform.rotation, targetRot, 3 * Time.deltaTime);
@@ -409,7 +399,7 @@ public class ComputerDriver : MonoBehaviour
                 }
             }
         }
-        
+
 
         if (item_manage.StarPowerUp)
         {
@@ -424,7 +414,7 @@ public class ComputerDriver : MonoBehaviour
             rb.AddForce(transform.forward * 80000 * Time.deltaTime, ForceMode.Acceleration);
 
             if (AntiGravity) { }
-                //transform.Rotate(5 * Time.deltaTime, 0, 0, Space.Self);
+            //transform.Rotate(5 * Time.deltaTime, 0, 0, Space.Self);
 
             //Camera.main.transform.parent.parent.localEulerAngles += new Vector3(0.5f, 0, 0);
         }
@@ -433,21 +423,18 @@ public class ComputerDriver : MonoBehaviour
     }
     void drift_func()
     {
-        
-        
-
-        if(path.GetChild(current_node).tag == "DriftLeft" && transform.InverseTransformDirection(rb.velocity).z > 40) //left
+        if (path.GetChild(current_node).tag == "DriftLeft" && transform.InverseTransformDirection(rb.velocity).z > 40) //left
         {
-            if(hop_anim)
+            if (hop_anim)
             {
                 transform.GetChild(0).gameObject.GetComponent<Animator>().SetTrigger("Drift");
                 hop_anim = false;
             }
             driftleft = true;
             driftright = false;
-            
+
             transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, -30, 0), 8f * Time.deltaTime);
-            
+
         }
         if (path.GetChild(current_node).tag == "DriftRight" && transform.InverseTransformDirection(rb.velocity).z > 40) //right
         {
@@ -470,7 +457,7 @@ public class ComputerDriver : MonoBehaviour
             //particle effects
             if (drift_time >= 1 && drift_time < 3)
             {
-                
+
                 for (int i = 0; i < 5; i++)
                 {
                     //the two particle systems and their mai modules for drift effects
@@ -488,9 +475,7 @@ public class ComputerDriver : MonoBehaviour
                         DriftPS.Play();
                         DriftPS2.Play();
                     }
-
                 }
-                
             }
             if (drift_time >= 3 && drift_time < 6)
             {
@@ -502,8 +487,7 @@ public class ComputerDriver : MonoBehaviour
                     ParticleSystem.MainModule PSMAIN2 = DriftPS2.main;
                     PSMAIN.startColor = playerscript.drift2;
                     PSMAIN2.startColor = playerscript.drift2;
-            }
-
+                }
             }
             if (drift_time >= 6)
             {
@@ -518,18 +502,17 @@ public class ComputerDriver : MonoBehaviour
                     PSMAIN2.startColor = playerscript.drift3;
 
                 }
-;
             }
         }
 
         if ((path.GetChild(current_node).tag != "DriftLeft" && path.GetChild(current_node).tag != "DriftRight") || transform.InverseTransformDirection(rb.velocity).z <= 40 || !grounded) //stop drifting
         {
-            if(drift_time >= 1 && drift_time < 3)
+            if (drift_time >= 1 && drift_time < 3)
             {
                 boost = true;
                 boost_time = 0.5f;
             }
-            if(drift_time >= 3 && drift_time < 6)
+            if (drift_time >= 3 && drift_time < 6)
             {
                 boost = true;
                 boost_time = 1.5f;
@@ -557,13 +540,12 @@ public class ComputerDriver : MonoBehaviour
 
                 DriftPS.Stop();
                 DriftPS2.Stop();
-
             }
-        } 
+        }
     }
     void animations()
     {
-        if(dir <= -5)
+        if (dir <= -5)
         {
             DriverAnim.SetBool("TurnLeft", true);
             DriverAnim.SetBool("TurnRight", false);
@@ -605,12 +587,10 @@ public class ComputerDriver : MonoBehaviour
             frontRightTire.transform.localEulerAngles = Vector3.Lerp(frontRightTire.transform.localEulerAngles, new Vector3(0, 180, 0), 8 * Time.deltaTime);
             frontLeftTire.transform.localEulerAngles = Vector3.Lerp(frontLeftTire.transform.localEulerAngles, new Vector3(0, 180, 0), 8 * Time.deltaTime);
         }
-        
 
         //spin
         for (int i = 0; i < 4; i++)
         {
-
             if (current_speed < 6.5 && current_speed > -6.5)
             {
                 tires[i].transform.Rotate(-90 * Time.deltaTime * current_speed * 0.035f, 0, 0);
@@ -625,23 +605,21 @@ public class ComputerDriver : MonoBehaviour
     {
         lookAtTime += Time.deltaTime;
 
-        if(lookAtTime > 5)
+        if (lookAtTime > 5)
         {
             lookAtTime = 0;
         }
 
-        if(head != null)
+        if (head != null)
         {
-
-            
             //We also have to establish the condition to look at someone when a specific animation is not playing
-            if(lookAtTime > 2)
+            if (lookAtTime > 2)
             {
                 float dist = 9999;
                 //find closest player
-                for(int i = 0; i < allPlayers.Count; i++)
+                for (int i = 0; i < allPlayers.Count; i++)
                 {
-                    if(Vector3.Distance(transform.position, allPlayers[i].position) < dist)
+                    if (Vector3.Distance(transform.position, allPlayers[i].position) < dist)
                     {
                         dist = Vector3.Distance(transform.position, allPlayers[i].position);
                         personToLookAt = allPlayers[i];
@@ -650,7 +628,7 @@ public class ComputerDriver : MonoBehaviour
                         float targetAngle = Mathf.Atan2(Target.x, Target.z) * Mathf.Rad2Deg;
                         targetAngle = Mathf.Clamp(targetAngle, -90, 90);
 
-                        if(Vector3.Distance(personToLookAt.position, transform.position) < 15)
+                        if (Vector3.Distance(personToLookAt.position, transform.position) < 15)
                         {
                             head.localRotation = Quaternion.SlerpUnclamped(head.localRotation, Quaternion.Euler(new Vector3(0, -targetAngle, 0)), 5 * Time.deltaTime);
                         }
@@ -659,11 +637,10 @@ public class ComputerDriver : MonoBehaviour
             }
             else
             {
-                head.localRotation = Quaternion.SlerpUnclamped(head.localRotation ,Quaternion.Euler(new Vector3(0, 0, 3)), 5 * Time.deltaTime);
-
+                head.localRotation = Quaternion.SlerpUnclamped(head.localRotation, Quaternion.Euler(new Vector3(0, 0, 3)), 5 * Time.deltaTime);
             }
         }
-        
+
     }
 
     void groundNormalRotation()
@@ -677,13 +654,8 @@ public class ComputerDriver : MonoBehaviour
             {
                 transform.rotation = Quaternion.LerpUnclamped(transform.rotation, Quaternion.FromToRotation(transform.up * 2, hit.normal) * transform.rotation, 7.5f * Time.deltaTime);
             }
-
-
-
         }
     }
-
-
 
     private void OnTriggerStay(Collider other)
     {
@@ -712,7 +684,7 @@ public class ComputerDriver : MonoBehaviour
             }
         }
 
-        if(other.gameObject.tag == "ColliderInAir")
+        if (other.gameObject.tag == "ColliderInAir")
         {
             /*
             if (AntiGravity)
@@ -730,7 +702,7 @@ public class ComputerDriver : MonoBehaviour
             }
             */
 
-            if (GLIDER_FLY)
+            if (GliderFly)
             {
                 if (!AntiGravity)
                     rb.AddForce(Vector3.down * other.GetComponent<colliderInAir>().force * Time.deltaTime, ForceMode.Acceleration);
@@ -743,9 +715,6 @@ public class ComputerDriver : MonoBehaviour
             {
                 rb.AddRelativeForce(Vector3.down * other.GetComponent<colliderInAir>().force * Time.deltaTime, ForceMode.Acceleration);
             }
-            
-
-
         }
     }
 
@@ -754,18 +723,18 @@ public class ComputerDriver : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         //next waypoint
-        if(other.transform == path.GetChild(current_node))
+        if (other.transform == path.GetChild(current_node))
         {
             if (current_node == path.childCount - 1) //if last node, set the next node to first
             {
                 current_node = 0;
             }
             else
-                current_node++;
-
-
+            {
+                current_node++; 
+            }
         }
-        if(other.gameObject.tag == "SlowDownComputer")
+        if (other.gameObject.tag == "SlowDownComputer")
         {
             if (boost_time < 1)
             {
@@ -773,7 +742,6 @@ public class ComputerDriver : MonoBehaviour
                 current_speed = Desired_Max_Speed;
                 slowDown = true;
             }
-
         }
         if (other.gameObject.tag == "GliderPanelFly")
         {
@@ -783,12 +751,16 @@ public class ComputerDriver : MonoBehaviour
         if (other.gameObject.tag == "AntiGravity")
         {
             if (!item_manage.StarPowerUp)
-                StartCoroutine(antiGravityColor());
+            {
+                StartCoroutine(antiGravityColor()); 
+            }
         }
         if (other.gameObject.tag == "AntiGravityFalse")
         {
             if (!item_manage.StarPowerUp)
+            {
                 StartCoroutine(exitAntiGravity());
+            }
         }
 
         if (other.gameObject.tag == "JumpPanel" && !JUMP_PANEL)
@@ -805,7 +777,6 @@ public class ComputerDriver : MonoBehaviour
             {
                 BoostBurstPS.transform.GetChild(i).GetComponent<ParticleSystem>().Play(); //left and right included
             } //burst boost
-
         }
     }
 
@@ -822,34 +793,29 @@ public class ComputerDriver : MonoBehaviour
             glideAngleZ = other.GetComponent<GetGlideAngle>().glideAngle;
             glideAngleX = other.GetComponent<GetGlideAngle>().glideAngleXOpponent;
 
-            if (!GLIDER_FLY && other.gameObject.name != "GlidingTriggers")
+            if (!GliderFly && other.gameObject.name != "GlidingTriggers")
             {
                 transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetTrigger("Glide1");
-                GLIDER_FLY = true;
+                GliderFly = true;
                 GLider.GetComponent<Animator>().SetBool("GliderOpen", true);
                 GLider.GetComponent<Animator>().SetBool("GliderClose", false);
             }
-
-
         }
-        if(other.gameObject.tag == "GliderPanel")
+        if (other.gameObject.tag == "GliderPanel")
         {
             boost_time = 2;
         }
 
-        
+
     }
     private IEnumerator OnCollisionEnter(Collision collision)
     {
-
-
-        if(collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Dirt")
+        if (collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Dirt")
         {
-            GLIDER_FLY = false;
+            GliderFly = false;
             aboutToFly = false;
             GLider.GetComponent<Animator>().SetBool("GliderOpen", false);
             GLider.GetComponent<Animator>().SetBool("GliderClose", true);
-            
 
             if (JUMP_PANEL)
             {
@@ -857,21 +823,21 @@ public class ComputerDriver : MonoBehaviour
             }
         }
 
-        if(collision.gameObject.tag == "Player")
+        if (collision.gameObject.tag == "Player")
         {
-            if ((item_manage.StarPowerUp || item_manage.isBullet) && !collision.gameObject.GetComponent<ItemManager>().StarPowerUp )
+            if ((item_manage.StarPowerUp || item_manage.isBullet) && !collision.gameObject.GetComponent<ItemManager>().StarPowerUp)
             {
-                StartCoroutine(collision.gameObject.GetComponent<Player>().hitByShell()); //the player has the function that does all this work
-                if(!raceManager.FrontFPCam.activeSelf)
+                StartCoroutine(collision.gameObject.GetComponent<Player>().HitByShell()); //the player has the function that does all this work
+                if (!raceManager.FrontFPCam.activeSelf)
                     GameObject.Find("Main Camera").GetComponent<Animator>().SetTrigger("ShellHit");
             }
         }
-        if(collision.gameObject.tag == "Opponent" && !collision.gameObject.GetComponent<OpponentItemManager>().StarPowerUp && item_manage.StarPowerUp)
+        if (collision.gameObject.tag == "Opponent" && !collision.gameObject.GetComponent<OpponentItemManager>().StarPowerUp && item_manage.StarPowerUp)
         {
-            collision.gameObject.GetComponent<OpponentItemManager>().hitByShell(); //the opponent has the function that does all this work
+            collision.gameObject.GetComponent<OpponentItemManager>().HitByShell(); //the opponent has the function that does all this work
         }
 
-        if(collision.gameObject.tag == "Cow")
+        if (collision.gameObject.tag == "Cow")
         {
             //angle calc
             Vector3 myangle = collision.transform.position - transform.position;
@@ -889,17 +855,14 @@ public class ComputerDriver : MonoBehaviour
             {
                 if (!item_manage.StarPowerUp && !item_manage.isBullet)
                 {
-                   
-                    item_manage.hitByBanana();
+
+                    item_manage.HitByBanana();
                     for (int i = 0; i < 30; i++)
                     {
                         force = Mathf.Lerp(force, 0, 3 * Time.deltaTime);
                         yield return new WaitForSeconds(0.01f);
                     }
                 }
-            }
-            else if(item_manage.StarPowerUp || item_manage.isBullet)
-            {
             }
         }
         if (collision.gameObject.tag == "Trolley")
@@ -921,7 +884,7 @@ public class ComputerDriver : MonoBehaviour
                 if (!item_manage.StarPowerUp && !item_manage.isBullet)
                 {
                     collideCooldown = 0;
-                    item_manage.hitByShell();
+                    item_manage.HitByShell();
                     for (int i = 0; i < 30; i++)
                     {
                         force = Mathf.Lerp(force, 0, 3 * Time.deltaTime);
@@ -937,9 +900,9 @@ public class ComputerDriver : MonoBehaviour
 
         if (collision.gameObject.tag == "Crate")
         {
-            if (current_speed > 5 && boost_time <= 0) {  current_speed = 5; }
+            if (current_speed > 5 && boost_time <= 0) { current_speed = 5; }
 
-            StartCoroutine(collision.gameObject.GetComponent<Crates>().destroy());
+            StartCoroutine(collision.gameObject.GetComponent<Crates>().Destroy());
         }
         if ((collision.gameObject.tag == "Opponent" || collision.gameObject.tag == "Player") && Vector3.Distance(transform.position, collision.transform.position) < 5 && AntiGravity)
         {
@@ -965,20 +928,17 @@ public class ComputerDriver : MonoBehaviour
                 {
                     if (current_speed > 50)
                     {
-
                         {
                             transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetTrigger("AntigravSpinLeft");
                         }
                     }
-                    
+
                     for (int i = 0; i < 30; i++)
                     {
                         force = Mathf.Lerp(force, 0, 3 * Time.deltaTime);
                         rb.AddForce(transform.right * force * Time.deltaTime, ForceMode.Impulse);
                         yield return new WaitForSeconds(0.01f);
                     }
-
-
                 }
                 else
                 {
@@ -987,7 +947,7 @@ public class ComputerDriver : MonoBehaviour
                         {
                             transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetTrigger("AntigravSpinRight");
                         }
-                    }                 
+                    }
                     for (int i = 0; i < 30; i++)
                     {
                         force = Mathf.Lerp(force, 0, 3 * Time.deltaTime);
@@ -1005,7 +965,6 @@ public class ComputerDriver : MonoBehaviour
         if (other.gameObject.tag == "Ground")
         {
             grounded = true;
-
         }
         if (other.gameObject.tag == "Dirt")
         {
@@ -1023,7 +982,6 @@ public class ComputerDriver : MonoBehaviour
             for (int i = 0; i < axels.Length; i++)
             {
                 axelScales[i] = axels[i].localScale;
-
                 transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Animator>().SetTrigger("AntiGravity");
             }
 
@@ -1037,32 +995,25 @@ public class ComputerDriver : MonoBehaviour
                     //center color
                     tireRenderers[j].material.SetColor("Color_89B4C299", Color.LerpUnclamped(tireRenderers[j].material.GetColor("Color_89B4C299"), antiGravityTireColor, 12 * Time.deltaTime));
 
-                    if(j < 3)
+                    if (j < 3)
                         axels[j].localScale = Vector3.LerpUnclamped(axels[j].localScale, new Vector3(axels[j].localScale.x, 0, axels[j].localScale.z), 8 * Time.deltaTime);
 
                     TireParents[j].transform.localPosition = Vector3.Lerp(TireParents[j].transform.localPosition, antiGravityTirePositions[j], 12 * Time.deltaTime);
 
                     tireRenderers[j].material.SetVector("Vector4_6C68F82F", Vector4.LerpUnclamped(tireRenderers[j].material.GetVector("Vector4_6C68F82F"), new Vector4(5, 5, 5, 5), 12 * Time.deltaTime));
-
-
                 }
                 kartMat.SetVector("Vector4_70BBF882", Vector4.LerpUnclamped(kartMat.GetVector("Vector4_70BBF882"), new Vector4(5, 5, 5, 5), 12 * Time.deltaTime));
 
             }
 
-
-
             //rotate 90 degrees
             for (int i = 0; i < 30; i++)
             {
-
                 TireParents[0].transform.localRotation = Quaternion.LerpUnclamped(TireParents[0].transform.localRotation, Quaternion.Euler(0, 0, 90), 12 * Time.deltaTime);
                 TireParents[1].transform.localRotation = Quaternion.LerpUnclamped(TireParents[1].transform.localRotation, Quaternion.Euler(0, 180, -90), 12 * Time.deltaTime);
                 TireParents[2].transform.localRotation = Quaternion.LerpUnclamped(TireParents[2].transform.localRotation, Quaternion.Euler(0, 0, -90), 12 * Time.deltaTime);
                 TireParents[3].transform.localRotation = Quaternion.LerpUnclamped(TireParents[3].transform.localRotation, Quaternion.Euler(0, 180, 90), 12 * Time.deltaTime);
                 yield return new WaitForSeconds(0.001f);
-
-
             }
 
             for (int i = 0; i < 60; i++)
@@ -1077,14 +1028,11 @@ public class ComputerDriver : MonoBehaviour
                 }
             }
         }
-
     }
     IEnumerator exitAntiGravity()
     {
         if (AntiGravity)
         {
-
-
             for (int i = 0; i < 25; i++)
             {
                 TireParents[0].transform.localRotation = Quaternion.LerpUnclamped(TireParents[0].transform.localRotation, Quaternion.Euler(0, 0, 0), 12 * Time.deltaTime);
@@ -1099,7 +1047,6 @@ public class ComputerDriver : MonoBehaviour
                 tireRenderers[3].material.SetVector("Vector4_6C68F82F", Vector4.LerpUnclamped(tireRenderers[3].material.GetVector("Vector4_6C68F82F"), new Vector4(0, 0, 0, 0), 12 * Time.deltaTime));
 
                 kartMat.SetVector("Vector4_70BBF882", Vector4.LerpUnclamped(kartMat.GetVector("Vector4_70BBF882"), new Vector4(0, 0, 0, 0), 12 * Time.deltaTime));
-
             }
 
             for (int i = 0; i < 30; i++)
@@ -1107,11 +1054,11 @@ public class ComputerDriver : MonoBehaviour
                 yield return new WaitForSeconds(0.001f);
                 for (int j = 0; j < tireRenderers.Length; j++)
                 {
-                    if(j < 3)
+                    if (j < 3)
+                    {
                         axels[j].localScale = Vector3.LerpUnclamped(axels[j].localScale, axelScales[j], 5 * Time.deltaTime);
-
+                    }
                     TireParents[j].transform.localPosition = Vector3.LerpUnclamped(TireParents[j].transform.localPosition, tireLocalPositions[j], 12 * Time.deltaTime);
-
                 }
             }
         }
