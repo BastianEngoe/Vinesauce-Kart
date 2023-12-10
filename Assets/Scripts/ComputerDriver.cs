@@ -928,9 +928,7 @@ public class ComputerDriver : MonoBehaviour
                 {
                     if (current_speed > 50)
                     {
-                        {
-                            transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetTrigger("AntigravSpinLeft");
-                        }
+                        transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetTrigger("AntigravSpinLeft");
                     }
 
                     for (int i = 0; i < 30; i++)
@@ -944,9 +942,7 @@ public class ComputerDriver : MonoBehaviour
                 {
                     if (current_speed > 50)
                     {
-                        {
-                            transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetTrigger("AntigravSpinRight");
-                        }
+                        transform.GetChild(0).GetChild(0).GetComponent<Animator>().SetTrigger("AntigravSpinRight");
                     }
                     for (int i = 0; i < 30; i++)
                     {
@@ -954,7 +950,6 @@ public class ComputerDriver : MonoBehaviour
                         rb.AddForce(-transform.right * force * Time.deltaTime, ForceMode.Impulse);
                         yield return new WaitForSeconds(0.01f);
                     }
-
                 }
             }
 

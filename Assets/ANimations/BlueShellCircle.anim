@@ -809,7 +809,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 2.65
-    functionName: explode
+    functionName: Explode
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

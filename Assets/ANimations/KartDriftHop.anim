@@ -312,21 +312,21 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0
-    functionName: playHopSound
+    functionName: PlayHopSound
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.21666667
-    functionName: cam_shake
+    functionName: CamShake
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.28333333
-    functionName: is_drifting
+    functionName: IsDrifting
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

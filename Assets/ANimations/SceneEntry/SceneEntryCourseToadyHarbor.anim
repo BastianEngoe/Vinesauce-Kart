@@ -872,56 +872,56 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0
-    functionName: disableSet1
+    functionName: DisableSet1
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 3.5166667
-    functionName: disableSet2
+    functionName: DisableSet2
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 8
-    functionName: disableSet3
+    functionName: DisableSet3
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 12.5
-    functionName: disableCourseNameUI
+    functionName: DisableCourseNameUI
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 13.5
-    functionName: fadeOut
+    functionName: FadeOut
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 14.033334
-    functionName: enableSets
+    functionName: EnableSets
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 14.5
-    functionName: startCountDown
+    functionName: StartCountDown
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 14.516666
-    functionName: disableThisCam
+    functionName: DisableThisCam
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
